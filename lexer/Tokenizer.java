@@ -64,7 +64,7 @@ public class Tokenizer implements Iterator<Token>{
         lastToken = createTokenFromMatch(tokenMatcher);
         if (lastToken.getType() == Token.TokenType.WHITE_SPACE)
         {
-            lastToken = createTokenFromMatch(tokenMatcher);
+            return next();
         }
 
         return lastToken;
