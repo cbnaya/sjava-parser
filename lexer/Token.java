@@ -3,7 +3,6 @@ package lexer;
 import java.util.regex.Pattern;
 
 public class Token {
-
     public static enum TokenType {
         COMMENT("//"),
         END_OF_STATEMENT(";"),
@@ -12,19 +11,27 @@ public class Token {
         CLOSE_PARENTHESES("\\)"),
         OPEN_BRACES("\\{"),
         CLOSE_BRACES("\\}"),
-        WHILE_LOOP("while"),
-        IF("if"),
-        FUNCTION_DECLARE("void"),
-        DOUBLE_TYPE("double"),
-        IT_TYPE("int"),
-        BOOLEAN_TYPE("boolean"),
-        STRING_TYPE("String"),
+        WHILE_LOOP("while\\b"),
+        IF("if\\b"),
+        FUNCTION_DECLARE("void\\b"),
+        ASSIGNMENT_OP("="),
+        AND_OP("\\&\\&"),
+        OR_OP("\\|\\|"),
+        RETURN_OP("return\\b"),
+        COMMA(","),
+        FINAL("final\b"),
+        //DOUBLE_TYPE("double\\b"),
+        //INT_TYPE("int\\b"),
+        VAR_DECELERATION("(boolean\\b)|(String\\b)|(int\\b)|double\\b"),
+        //BOOLEAN_TYPE("boolean\\b"),
+        //STRING_TYPE("String\\b"),
         LITERAL_DOUBLE_NUMBER("-?\\d+\\.\\d+"),
         LITERAL_INT_NUMBER("-?\\d+"),
         LITERAL_BOOLEAN("(true\\b)|(false\\b)"),
         LITERAL_STRING("\"(.*?)\""),
         WHITE_SPACE("[ \t]+"),
         IDENTITY("\\w+"),
+        EOF("\\z"),
         UNKNOWN(".+?");
 
         private TokenType(String pattern) {
@@ -42,10 +49,20 @@ public class Token {
         private final String pattern;
         }
 
-    Token(TokenType tokenType, String tokenData)
+    Token(TokenType tokenType, String tokenData, int startPosition, int endPosition)
     {
         type = tokenType;
         data = tokenData;
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+    }
+
+    public int getStartPosition() {
+        return startPosition;
+    }
+
+    public int getEndPosition() {
+        return endPosition;
     }
 
     public TokenType getType() {
@@ -56,6 +73,13 @@ public class Token {
         return data;
     }
 
+    public String toString()
+    {
+        return String.format("%s : %s  (%d,%d)", type.name(), data, startPosition, endPosition);
+    }
+
     private TokenType type;
     private String data;
+    private int startPosition;
+    private int endPosition;
 }
