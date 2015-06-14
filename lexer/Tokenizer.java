@@ -1,21 +1,24 @@
 package lexer;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by cbnaya on 12/06/2015.
  */
-public class Tokenizer{
+public class Tokenizer implements Iterator<Token>{
 
-    private final int inputSize;
+    private Token lastToken;
     private Matcher tokenMatcher;
 
     public Tokenizer(String input)
     {
         Pattern tokenPattern = createTokensPattern();
         tokenMatcher = tokenPattern.matcher(input);
-        inputSize = input.length();
     }
 
 
@@ -37,18 +40,38 @@ public class Tokenizer{
             String result = match.group(type.getGroupName());
             if (result != null)
             {
-                return new Token(type, result);
+                return new Token(type, result, match.start(), match.end());
             }
         }
 
         throw new IllegalArgumentException("TODO");
     }
 
+    @Override
+    public boolean hasNext() {
+        if (null == lastToken)
+        {
+            return true;
+        }
+        return lastToken.getType() != Token.TokenType.EOF;
+    }
+
     public Token next() {
         if (!tokenMatcher.find()) {
-            return null;
+            throw new NoSuchElementException();
         }
 
-        return createTokenFromMatch(tokenMatcher);
+        lastToken = createTokenFromMatch(tokenMatcher);
+        if (lastToken.getType() == Token.TokenType.WHITE_SPACE)
+        {
+            lastToken = createTokenFromMatch(tokenMatcher);
+        }
+
+        return lastToken;
+    }
+
+    @Override
+    public void remove() {
+        throw new NotImplementedException();
     }
 }
