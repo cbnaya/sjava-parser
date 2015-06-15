@@ -14,13 +14,14 @@ public class Tokenizer implements Iterator<Token>{
 
     private Token lastToken;
     private Matcher tokenMatcher;
+    private String fileContent;
 
     public Tokenizer(String input)
     {
         Pattern tokenPattern = createTokensPattern();
         tokenMatcher = tokenPattern.matcher(input);
+        fileContent = input;
     }
-
 
     private static Pattern createTokensPattern()
     {
@@ -40,7 +41,9 @@ public class Tokenizer implements Iterator<Token>{
             String result = match.group(type.getGroupName());
             if (result != null)
             {
-                return new Token(type, result, match.start(), match.end());
+                return new Token(type, result,
+                                    Position.createFromOffset(match.start(), fileContent),
+                                    Position.createFromOffset(match.end() -1, fileContent));
             }
         }
 

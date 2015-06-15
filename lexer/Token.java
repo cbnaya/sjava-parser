@@ -49,7 +49,7 @@ public class Token {
         private final String pattern;
         }
 
-    Token(TokenType tokenType, String tokenData, int startPosition, int endPosition)
+    Token(TokenType tokenType, String tokenData, Position startPosition, Position endPosition)
     {
         type = tokenType;
         data = tokenData;
@@ -57,11 +57,11 @@ public class Token {
         this.endPosition = endPosition;
     }
 
-    public int getStartPosition() {
+    public Position getStartPosition() {
         return startPosition;
     }
 
-    public int getEndPosition() {
+    public Position getEndPosition() {
         return endPosition;
     }
 
@@ -75,11 +75,12 @@ public class Token {
 
     public String toString()
     {
-        return String.format("%s : %s  (%d,%d)", type.name(), data, startPosition, endPosition);
+        return String.format("%s : %s  (%s - %s)", type.name(), data,
+                                            startPosition.toString(), endPosition.toString());
     }
 
     private TokenType type;
     private String data;
-    private int startPosition;
-    private int endPosition;
+    private Position startPosition;
+    private Position endPosition;
 }
