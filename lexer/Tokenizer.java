@@ -59,13 +59,28 @@ public class Tokenizer implements Iterator<Token>{
         return lastToken.getType() != Token.TokenType.EOF;
     }
 
+    private boolean ifIgnore(Token.TokenType tokenType)
+    {
+        switch (tokenType)
+        {
+            case WHITE_SPACE:
+            case COMMENT:
+            {
+                return true;
+            }
+            default:
+            {
+                return false;
+            }
+        }
+    }
     public Token next() {
         if (!tokenMatcher.find()) {
             throw new NoSuchElementException();
         }
 
         lastToken = createTokenFromMatch(tokenMatcher);
-        if (lastToken.getType() == Token.TokenType.WHITE_SPACE)
+        if (ifIgnore(lastToken.getType()))
         {
             return next();
         }

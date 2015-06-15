@@ -136,9 +136,34 @@ public class TokenizerTest extends TestCase {
         assertEquals(tok.getData(), "\"blalba\"");
     }
 
+    public void testComment()
+    {
+        String s="//blablabla\n";
+        Tokenizer t = new Tokenizer(s);
+
+        Token tok = t.next();
+
+        assertEquals(tok.getType(), Token.TokenType.COMMENT);
+        assertEquals(tok.getData(), "//blablabla\n");
+    }
+
+
+    public void testCommentOtherNewLine()
+    {
+        String s="//blablabla\r\n";
+        Tokenizer t = new Tokenizer(s);
+
+        Token tok = t.next();
+
+        assertEquals(tok.getType(), Token.TokenType.COMMENT);
+        assertEquals(tok.getData(), "//blablabla\r\n");
+    }
+
     public void testGetTokenGroupName()
     {
         assertEquals("ENDOFSTATEMENT", Token.TokenType.END_OF_STATEMENT.getGroupName());
     }
+
+
 
 }

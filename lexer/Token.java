@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class Token {
     public static enum TokenType {
-        COMMENT("//"),
+        COMMENT("//.*?\r?\n"),
         END_OF_STATEMENT(";"),
         NEW_LINE("\r?\n"),
         OPEN_PARENTHESES("\\("),
