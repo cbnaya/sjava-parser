@@ -22,7 +22,7 @@ public class Token {
         FINAL("final\b"),
         //DOUBLE_TYPE("double\\b"),
         //INT_TYPE("int\\b"),
-        VAR_DECELERATION("(boolean\\b)|(String\\b)|(int\\b)|double\\b"),
+        VAR_TYPE("(boolean\\b)|(String\\b)|(int\\b)|double\\b"),
         //BOOLEAN_TYPE("boolean\\b"),
         //STRING_TYPE("String\\b"),
         LITERAL_DOUBLE_NUMBER("-?\\d+\\.\\d+"),
