@@ -334,6 +334,7 @@ public class Parser {
             case LITERAL_DOUBLE_NUMBER:
             case LITERAL_INT_NUMBER:
             case LITERAL_STRING:
+            case LITERAL_CHAR:
                 return true;
             default:
                 return false;
