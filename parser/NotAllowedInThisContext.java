@@ -7,7 +7,7 @@ import lexer.Token;
  */
 public class NotAllowedInThisContext extends Throwable {
     public NotAllowedInThisContext(Token tok) {
-        super(String.format("error (%d) token of type %s (%s) not allowed in this context",
-                tok.getStartPosition(), tok.getType().name(),  tok.getData()));
+        super(String.format("error (%s) token of type %s (%s) not allowed in this context",
+                tok.getStartPosition().toString(), tok.getType().name(),  tok.getData()));
     }
 }
