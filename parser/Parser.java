@@ -262,10 +262,7 @@ public class Parser {
     private void parseVariableDeceleration(String type) throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
         Token tok = tokenizer.next();
         do {
-            if (tok.getType() != TokenType.IDENTITY)
-            {
-                //TODO:
-            }
+            validateTokenType(tok, TokenType.IDENTITY);
             String varName = tok.getData();
 
             tok = tokenizer.next();
