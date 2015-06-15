@@ -32,12 +32,14 @@ public class ComplexItrator<T> {
         {
             T result = nextElement;
             nextElement = null;
-            return result;
+            currentElement = result;
         }
         else
         {
-            return iterator.next();
+            currentElement = iterator.next();
         }
+        nextElement = null;
+        return currentElement;
     }
 
     public T current()
@@ -53,7 +55,7 @@ public class ComplexItrator<T> {
         }
         if (null == nextElement)
         {
-            nextElement = next();
+            nextElement = iterator.next();
         }
 
         return nextElement;
