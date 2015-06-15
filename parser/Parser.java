@@ -2,14 +2,27 @@ package parser;
 
 import lexer.Token;
 import lexer.Tokenizer;
-
 import static lexer.Token.*;
-import static lexer.Token.TokenType.CLOSE_BRACES;
 
 public class Parser {
     public Parser(Tokenizer tokenizer)
     {
         this.tokenizer = new ComplexItrator<Token>(tokenizer);
+    }
+
+    private void validateTokenType(Token tok, TokenType requiredType) throws OtherTokenTypeNeedHere {
+        if (tok.getType() != requiredType)
+        {
+            throw new OtherTokenTypeNeedHere(tok, requiredType);
+        }
+    }
+
+    private void validateNextTokenIs(TokenType requiredType) throws OtherTokenTypeNeedHere {
+        Token tok = tokenizer.next();
+        if(tok.getType() != requiredType)
+        {
+            throw new OtherTokenTypeNeedHere(tok, requiredType);
+        }
     }
 
     public void parseGlobal() throws   NotAllowedInThisContext,
@@ -23,13 +36,18 @@ public class Parser {
                     parseFunctionDeclaration();
                 }
                 break;
-                case VAR_DECELERATION: {
-                    parseVariableDeceleration(tok.getData());
+                case VAR_TYPE: {
+                    parseVariableDeceleration();
                 }
                 break;
+                case IDENTITY:
+                {
+                    //if the global call method is not allowed
+                    parseAssignment();
+                }
                 case FINAL:
                 {
-                    //TODO
+                    //TODO:
                 }
                 break;
                 case NEW_LINE:
@@ -47,6 +65,8 @@ public class Parser {
     private void parseFunctionDeclaration() throws  NotAllowedInThisContext,
                                                     OtherTokenTypeNeedHere
     {
+        validateTokenType(tokenizer.current(), Token.TokenType.FUNCTION_DECLARE);
+
         Token tok = tokenizer.next();
         validateTokenType(tok, TokenType.IDENTITY);
 
@@ -55,12 +75,6 @@ public class Parser {
         codeSegment();
     }
 
-    private void validateTokenType(Token tok, TokenType requiredType) throws OtherTokenTypeNeedHere {
-        if (tok.getType() != requiredType)
-        {
-            throw new OtherTokenTypeNeedHere(tok, requiredType);
-        }
-    }
 
     private void codeSegment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         validateNextTokenIs(TokenType.OPEN_BRACES);
@@ -73,43 +87,27 @@ public class Parser {
             {
                 case IF:
                 {
-                    parseCondition();
-                    codeSegment();
+                    parseIf();
                 }
                 break;
                 case WHILE_LOOP:
                 {
-                    parseCondition();
-                    codeSegment();
+                    parseWhile();
                 }
                 break;
-                case VAR_DECELERATION:
+                case VAR_TYPE:
                 {
-                    parseVariableDeceleration(tok.getData());
+                    parseVariableDeceleration();
                 }
                 break;
                 case IDENTITY:
                 {
-                    Token identity = tok;
-                    tok = tokenizer.next();
-                    if (tok.getType() == TokenType.ASSIGNMENT_OP)
-                    {
-                        parseAssigment(identity.getData());
-                    }
-                    else if (tok.getType() == TokenType.OPEN_PARENTHESES)
-                    {
-                        parseCallMethod(identity.getData());
-                    }
-                    else
-                    {
-                        throw new NotAllowedInThisContext(tok);
-                    }
+                    parseIdentity();
                 }
                 break;
                 case RETURN_OP:
                 {
-                    validateNextTokenIs(TokenType.END_OF_STATEMENT);
-                    validateNextTokenIs(TokenType.NEW_LINE);
+                    parseReturn();
                 }
                 break;
                 case CLOSE_BRACES:
@@ -123,27 +121,71 @@ public class Parser {
             }
 
             tok = tokenizer.next();
-        }while (tok.getType() != CLOSE_BRACES);
+        }while (tok.getType() != TokenType.CLOSE_BRACES);
 
         validateNextTokenIs(TokenType.NEW_LINE);
     }
 
-    private void parseCallMethod(String data) throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private void parseReturn() throws OtherTokenTypeNeedHere {
+        validateTokenType(tokenizer.current(), TokenType.RETURN_OP);
+        validateNextTokenIs(TokenType.END_OF_STATEMENT);
+        validateNextTokenIs(TokenType.NEW_LINE);
+    }
+
+    private void parseIdentity() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+        validateTokenType(tokenizer.current(), TokenType.IDENTITY);
+
+        switch (tokenizer.getNext().getType())
+        {
+            case OPEN_PARENTHESES:
+            {
+                parseCallMethod();
+            }
+            break;
+            case ASSIGNMENT_OP:
+            {
+                parseAssignment();
+            }
+            break;
+            default:
+            {
+                throw new NotAllowedInThisContext(tokenizer.getNext());
+            }
+        }
+    }
+
+    private void parseWhile() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+        validateTokenType(tokenizer.current(), TokenType.WHILE_LOOP);
+        parseCondition();
+        codeSegment();
+    }
+
+    private void parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+        validateTokenType(tokenizer.current(), TokenType.IF);
+        parseCondition();
+        codeSegment();
+    }
+
+    private void parseCallMethod() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+        validateTokenType(tokenizer.current(), TokenType.IDENTITY);
+        String methodName = tokenizer.current().getData();
         parseCallArguments();
         validateNextTokenIs(Token.TokenType.END_OF_STATEMENT);
         validateNextTokenIs(Token.TokenType.NEW_LINE);
     }
 
     private void parseCallArguments() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
-        Token tok = tokenizer.next();
+        validateNextTokenIs(TokenType.OPEN_PARENTHESES);
+        Token tok;
        do
         {
-            if (tok.getType() == Token.TokenType.COMMA)
-            {
-                tok = tokenizer.next();
-            }
+            tok = tokenizer.next();
             switch(tok.getType())
             {
+                case CLOSE_PARENTHESES:
+                {
+                    continue;
+                }
                 case IDENTITY:
                 {
 
@@ -156,25 +198,15 @@ public class Parser {
                 {
 
                 }break;
-                case AND_OP:
-                {
-                    //TODO
-                    tok = tokenizer.next();
-                }
-                break;
-                case OR_OP:
-                {
-                    //TODO
-                    tok = tokenizer.next();
-                }
-                break;
                 default:
                 {
                     throw new NotAllowedInThisContext(tok);
                 }
             }
             tok = tokenizer.next();
-        } while (tok.getType() != Token.TokenType.CLOSE_PARENTHESES);
+        } while (tok.getType() == TokenType.COMMA);
+
+        validateTokenType(tok,TokenType.CLOSE_PARENTHESES);
     }
 
     private void parseSingleCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
@@ -207,90 +239,83 @@ public class Parser {
     }
     private void parseCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
+        Token prevCondition;
         Token tok;
         do
         {
             parseSingleCondition();
             tok = tokenizer.next();
+            //TODO : when create the tree this code have to be more complex
         }while ((tok.getType() == TokenType.OR_OP) || (tok.getType() == TokenType.AND_OP));
 
         validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
     }
 
-    private void validateNextTokenIs(TokenType requiredType) throws OtherTokenTypeNeedHere {
-        Token tok = tokenizer.next();
-        if(tok.getType() != requiredType)
-        {
-            throw new OtherTokenTypeNeedHere(tok, requiredType);
-        }
-    }
-
     private void parseDecelerationArgs() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
+        Token tok;
 
-        Token tok = tokenizer.next();
-        do {
-            if(tok.getType() == TokenType.COMMA)
-            {
-                tok = tokenizer.next();
-            }
-
+        do
+        {
+            tok = tokenizer.next();
             if (tok.getType() == TokenType.CLOSE_PARENTHESES)
             {
-                break;
+                continue;
             }
+
             boolean isFinal = false;
+
             if (tok.getType() == TokenType.FINAL)
             {
                 isFinal = true;
                 tok = tokenizer.next();
             }
 
-            validateTokenType(tok, TokenType.VAR_DECELERATION);
-            Token type = tok;
+            validateTokenType(tok, TokenType.VAR_TYPE);
+            String type = tok.getData();
 
             tok = tokenizer.next();
             validateTokenType(tok, TokenType.IDENTITY);
+            String name = tok.getData();
 
             tok = tokenizer.next();
-
         }while (tok.getType() == TokenType.COMMA);
 
         validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
     }
 
-    private void parseVariableDeceleration(String type) throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
-        Token tok = tokenizer.next();
+    private void parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+        validateTokenType(tokenizer.current(), TokenType.VAR_TYPE);
+        String Type = tokenizer.current().getData();
+
+        Token tok;
         do {
+            tok =  tokenizer.next();
             validateTokenType(tok, TokenType.IDENTITY);
             String varName = tok.getData();
 
-            tok = tokenizer.next();
-            switch (tok.getType())
+            if (tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
             {
-                case COMMA:
-                {
-                    break;
-                }
-                case ASSIGNMENT_OP:
-                {
-                    parseAssigment(varName);
-                }
-                default:
-                {
-                    //TODO:
-                }
+                   parseAssignment();
             }
+
             tok = tokenizer.next();
-        }while(tok.getType() != TokenType.END_OF_STATEMENT);
+        }while(tok.getType() == TokenType.COMMA);
+
+        validateTokenType(tok, TokenType.END_OF_STATEMENT);
         validateNextTokenIs(TokenType.NEW_LINE);
     }
 
-    private void parseAssigment(String varName) throws NotAllowedInThisContext {
+    private void parseAssignment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+        validateTokenType(tokenizer.current(), TokenType.IDENTITY);
+        String varName = tokenizer.current().getData();
+
+        validateNextTokenIs(TokenType.ASSIGNMENT_OP);
+
         Token tok = tokenizer.next();
         if(tok.getType() == TokenType.IDENTITY)
         {
-            //TODO
+
         }
         else if (isLiteralData(tok))
         {
