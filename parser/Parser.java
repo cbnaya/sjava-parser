@@ -2,7 +2,10 @@ package parser;
 
 import lexer.Token;
 import lexer.Tokenizer;
-import static lexer.Token.*;
+
+import java.util.regex.Pattern;
+
+import static lexer.Token.TokenType;
 
 public class Parser {
     public Parser(Tokenizer tokenizer)
@@ -25,9 +28,8 @@ public class Parser {
         }
     }
 
-    public void parseGlobal() throws   NotAllowedInThisContext,
-                                        OtherTokenTypeNeedHere
-    {
+    public void parseGlobal() throws NotAllowedInThisContext,
+            OtherTokenTypeNeedHere, InvalidIdentityName {
         while (tokenizer.hasNext()) {
             Token tok = tokenizer.next();
 
@@ -62,21 +64,24 @@ public class Parser {
         }
     }
 
-    private void parseFunctionDeclaration() throws  NotAllowedInThisContext,
-                                                    OtherTokenTypeNeedHere
-    {
+    private void parseFunctionDeclaration() throws NotAllowedInThisContext,
+            OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), Token.TokenType.FUNCTION_DECLARE);
 
         Token tok = tokenizer.next();
         validateTokenType(tok, TokenType.IDENTITY);
 
         String methodName = tok.getData();
+        if (isValidateIdentityName(methodName))
+        {
+            throw new InvalidIdentityName(tok);
+        }
         parseDecelerationArgs();
         codeSegment();
     }
 
 
-    private void codeSegment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    private void codeSegment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
         validateNextTokenIs(TokenType.OPEN_BRACES);
         validateNextTokenIs(TokenType.NEW_LINE);
 
@@ -154,13 +159,13 @@ public class Parser {
         }
     }
 
-    private void parseWhile() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    private void parseWhile() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.WHILE_LOOP);
         parseCondition();
         codeSegment();
     }
 
-    private void parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    private void parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.IF);
         parseCondition();
         codeSegment();
@@ -284,7 +289,7 @@ public class Parser {
         validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
     }
 
-    private void parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private void parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.VAR_TYPE);
         String Type = tokenizer.current().getData();
 
@@ -293,6 +298,11 @@ public class Parser {
             tok =  tokenizer.next();
             validateTokenType(tok, TokenType.IDENTITY);
             String varName = tok.getData();
+
+            if (isValidateIdentityName(varName))
+            {
+                throw new InvalidIdentityName(tok);
+            }
 
             if (tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
             {
@@ -339,6 +349,18 @@ public class Parser {
             default:
                 return false;
         }
+    }
+
+    private boolean isValidateIdentityName(String identity)
+    {
+        if (    (!Pattern.matches("\\w+", identity))    ||
+                (identity == "_")                       ||
+                (Pattern.matches("\\d+\\w+", identity)))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private ComplexItrator<Token> tokenizer;
