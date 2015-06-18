@@ -28,11 +28,10 @@ public class ComplexItrator<T> {
         {
             throw new NoSuchElementException();
         }
+
         if (null != nextElement)
         {
-            T result = nextElement;
-            nextElement = null;
-            currentElement = result;
+            currentElement = nextElement;
         }
         else
         {
