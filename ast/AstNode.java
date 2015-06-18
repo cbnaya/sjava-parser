@@ -12,7 +12,9 @@ public abstract class AstNode {
         RETURN,
         CODE_SCOPE,
         METHOD,
-        GLOBAL
+        GLOBAL,
+        WHILE,
+        IF
     }
 
 	public AstNode(Position position)

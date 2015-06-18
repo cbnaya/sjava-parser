@@ -1,31 +1,28 @@
 package ast;
 
-import java.util.List;
-
-import callStack.CallStack;
 import lexer.Position;
 /**
  * Created by cbnaya on 14/06/2015.
  */
 
-public class ConditionalNode extends ScopeNode {
+public abstract class ConditionalNode extends AstNode {
 
-    public ConditionalNode(Position position, List<AstNode> body, 
-    		ExpressionNode condition)
+    private final ExpressionNode condition;
+    private ScopeNode body;
+
+    public ConditionalNode(Position position, ExpressionNode condition, ScopeNode body)
     {
-        super(position, body);
-        this.CONDITION = condition;
+        super(position);
+        this.condition= condition;
+        this.body = body;
     }
 
-    private final ExpressionNode CONDITION;
 
     public ExpressionNode getCondition() {
-        return CONDITION;
+        return condition;
     }
-    
-    @Override
-    public void fillCallStack(CallStack callStack) throws Exception {
-    	CONDITION.fillCallStack(callStack);
-    	super.fillCallStack(callStack);
+
+    public ScopeNode getBody() {
+        return body;
     }
 }

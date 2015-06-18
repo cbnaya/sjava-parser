@@ -1,16 +1,17 @@
 package ast;
 
-import java.util.List;
-
 import lexer.Position;
 
 public class IfNode extends ConditionalNode {
 
-	public IfNode(Position position, List<AstNode> body, 
-			ExpressionNode condition)
+	public IfNode(Position position, ExpressionNode condition, ScopeNode body)
     {
-        super(position, body, condition);
-	}
+        super(position, condition, body);
+    }
 
 
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.IF;
+    }
 }
