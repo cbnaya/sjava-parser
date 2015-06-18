@@ -10,7 +10,8 @@ public abstract class AstNode {
     public static enum NodeType
     {
         RETURN,
-        CODE_SCOPE
+        CODE_SCOPE,
+        METHOD
     }
 
 	public AstNode(Position position)
