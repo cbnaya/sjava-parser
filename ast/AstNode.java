@@ -16,7 +16,8 @@ public abstract class AstNode {
         WHILE,
         IF,
         VAR_DECLARATION,
-        CALL_METHOD
+        CALL_METHOD,
+        ASSIGNMENT,
     }
 
 	public AstNode(Position position)
