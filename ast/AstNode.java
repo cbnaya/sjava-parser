@@ -18,7 +18,8 @@ public abstract class AstNode {
         VAR_DECLARATION,
         CALL_METHOD,
         ASSIGNMENT,
-        LITERAL
+        LITERAL,
+        VAR_VAL
     }
 
 	public AstNode(Position position)

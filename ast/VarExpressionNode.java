@@ -1,27 +1,24 @@
 package ast;
 
-import types.Type;
-import identities.variables.Variable;
-import callStack.CallStack;
 import lexer.Position;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class VarExpressionNode extends ExpressionNode {
 
-	private final String NAME;
+	private final String name;
 	
 	public VarExpressionNode(Position position, String varName) {
 		super(position);
-		NAME = varName;
+		name = varName;
 	}
 
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		callStack.search(Variable.getFullName(NAME));
-	}
+    @Override
+    public ExpressionType getType() {
+        throw new NotImplementedException();
+    }
 
-	@Override
-	public Type getType(CallStack callStack) {
-		return callStack.search(Variable.getFullName(NAME)).getType();
-	}
-
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.VAR_VAL;
+    }
 }
