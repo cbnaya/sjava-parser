@@ -1,26 +1,24 @@
 package ast;
 
 import lexer.Position;
-import types.Type;
-import callStack.CallStack;
 
 public class LiteralExpressionNode extends ExpressionNode {
 
-	private final Type TYPE;
+	private final ExpressionType type;
+    private final String value;
 
-	public LiteralExpressionNode(Position position, Type type) {
+	public LiteralExpressionNode(Position position, String value, ExpressionType type) {
 		super(position);
-		TYPE = type;
-	}
+		this.type = type;
+        this.value = value;
+    }
 
-	@Override
-	public Type getType(CallStack callStack) {
-		return TYPE;
-	}
+    public NodeType getNodeType() {
+        return NodeType.LITERAL;
+    }
 
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		return;
-	}
-
+    @Override
+    public ExpressionType getType() {
+        return type;
+    }
 }
