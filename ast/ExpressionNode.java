@@ -1,7 +1,5 @@
 package ast;
 
-import types.Type;
-import callStack.CallStack;
 import lexer.Position;
 
 /**
@@ -9,10 +7,28 @@ import lexer.Position;
  */
 
 public abstract class ExpressionNode extends AstNode {
-	
+
+    public static enum ExpressionType {
+        INT,
+        DOUBLE,
+        CHAR,
+        STRING,
+        BOOLEAN;
+
+        boolean accept(ExpressionType expType) {
+            return (this == expType) ||
+                    (this == DOUBLE && expType == INT) ||
+                    (this == BOOLEAN && (expType == INT || expType == DOUBLE));
+        }
+    }
+
+
     public ExpressionNode(Position position) {
         super(position);
     }
 
-	public abstract Type getType(CallStack callStack);
+    public abstract ExpressionType getType();
+
+
+    public String value;
 }
