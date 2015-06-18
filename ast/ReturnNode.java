@@ -1,6 +1,5 @@
 package ast;
 
-import callStack.CallStack;
 import lexer.Position;
 
 /**
@@ -11,6 +10,9 @@ public class ReturnNode extends AstNode{
         super(position);
     }
 
-	@Override
-	public void fillCallStack(CallStack callStack) {}
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.RETURN;
+    }
+
 }
