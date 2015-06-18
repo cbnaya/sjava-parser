@@ -9,4 +9,8 @@ public class AndNode extends BinaryOpNode {
 		super(position, left, right);
 	}
 
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.AND;
+    }
 }

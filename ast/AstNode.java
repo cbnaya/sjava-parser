@@ -19,7 +19,9 @@ public abstract class AstNode {
         CALL_METHOD,
         ASSIGNMENT,
         LITERAL,
-        VAR_VAL
+        VAR_VAL,
+        OR,
+        AND
     }
 
 	public AstNode(Position position)
