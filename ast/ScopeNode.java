@@ -1,11 +1,10 @@
 package ast;
 
-import java.util.List;
-
-import callStack.CallStack;
 import lexer.Position;
 
-public abstract class ScopeNode extends AstNode {
+import java.util.List;
+
+public class ScopeNode extends AstNode {
 
 	private List<AstNode> body;
 
@@ -17,12 +16,10 @@ public abstract class ScopeNode extends AstNode {
 	public List<AstNode> getBody() {
 		return body;
 	}
-	
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		for (AstNode node : body) {
-			node.fillCallStack(callStack);
-		}
-	}
 
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.CODE_SCOPE;
+    }
 }

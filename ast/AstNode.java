@@ -9,7 +9,8 @@ public abstract class AstNode {
 
     public static enum NodeType
     {
-        RETURN
+        RETURN,
+        CODE_SCOPE
     }
 
 	public AstNode(Position position)
