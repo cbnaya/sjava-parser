@@ -1,20 +1,19 @@
 package ast;
 
-import identities.variables.VariableFactory;
-import callStack.CallStack;
 import lexer.Position;
 
-public class VarDeclaration extends IdDeclarationNode {
+public class VarDeclaration extends AstNode {
 
-	public VarDeclaration(Position position, String type, String name, 
-    		boolean isFinal) {
-        super(position, name);
+	public VarDeclaration(Position position, String type, String name, boolean isFinal) {
+        super(position);
         this.type = type;
+        this.name = name;
         this.isFinal = isFinal;
     }
 
     private String type;
     private boolean isFinal;
+    private String name;
 
     public String getType() {
         return type;
@@ -23,11 +22,13 @@ public class VarDeclaration extends IdDeclarationNode {
     public boolean isFinal() {
     	return isFinal;
     }
-    
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		if (!callStack.add(VariableFactory.createVar(this))) {
-			throw new DuplicateIdentityException(getPosition(), getName());
-		}
-	}
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.VAR_DECLARATION;
+    }
 }

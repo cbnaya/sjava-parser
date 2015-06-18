@@ -14,7 +14,8 @@ public abstract class AstNode {
         METHOD,
         GLOBAL,
         WHILE,
-        IF
+        IF,
+        VAR_DECLARATION
     }
 
 	public AstNode(Position position)
