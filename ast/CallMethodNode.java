@@ -1,40 +1,31 @@
 package ast;
 
-import identities.Method;
+import lexer.Position;
 
 import java.util.List;
 
-import callStack.CallStack;
-import lexer.Position;
+public class CallMethodNode extends AstNode {
 
-public class CallMethodNode extends IdentityNode {
-
-	public CallMethodNode(Position position, String methodName, 
-			List<CallArgumentNode> methodArgs) {
-		super(position, methodName);
+	public CallMethodNode(Position position, String methodName, List<ExpressionNode> methodArgs) {
+		super(position);
+        name = methodName;
 		args = methodArgs;
 	}
 	
-	public List<CallArgumentNode> getArgs() {
+	public List<ExpressionNode> getArgs() {
         return args;
     }
-	
-	private List<CallArgumentNode> args;
 
-	//TODO
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		Method method = (Method) callStack.search(Method.getFullName(getName()));
-		
-	}
-	
-	public class CallArgumentNode extends AssignmentNode {
+    public String getName() {
+        return name;
+    }
+	private List<ExpressionNode> args;
+    private String name;
 
-		public CallArgumentNode(Position position, String name, 
-				ExpressionNode value) {
-			super(position, name, value);
-		}
 
-	}
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.CALL_METHOD;
+    }
 
 }
