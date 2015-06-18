@@ -11,7 +11,8 @@ public abstract class AstNode {
     {
         RETURN,
         CODE_SCOPE,
-        METHOD
+        METHOD,
+        GLOBAL
     }
 
 	public AstNode(Position position)

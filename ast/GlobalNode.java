@@ -1,30 +1,32 @@
 package ast;
 
-import java.util.List;
-
-import callStack.CallStack;
 import lexer.Position;
 
-public class GlobalNode extends ScopeNode {
+import java.util.List;
 
-	private List<MethodNode> methods;
+public class GlobalNode extends AstNode {
+
+    private List<MethodNode> methods;
+    private ScopeNode body;
 	
-	public GlobalNode(Position position, List<AstNode> body, 
-			List<MethodNode> methods) {
-		super(position, body);
-		this.methods = methods;
+	public GlobalNode(ScopeNode globalBody, List<MethodNode> globalMethods) {
+		super(new Position(0,0));
+
+		methods = globalMethods;
+        body = globalBody;
 	}
 	
 	public List<MethodNode> getMethods() {
 		return methods;
 	}
-	
-	@Override
-	public void fillCallStack(CallStack callStack) throws Exception {
-		super.fillCallStack(callStack);
-		for (MethodNode method : methods) {
-			method.fillCallStack(callStack);
-		}
-	}
+
+    public ScopeNode getBody() {
+        return body;
+    }
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.GLOBAL;
+    }
 
 }
