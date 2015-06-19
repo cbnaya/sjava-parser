@@ -1,0 +1,43 @@
+cbnaya
+geller
+
+
+=============================
+=      Files description    =
+=============================
+Token.java - Representing a token in the s-java language.
+Tokenizer.java - An iterator of s-java tokens.
+Position.java - Representing a location in a file.
+
+Parser.java - Parses a s-java file and returns an abstract syntax tree representing the code.
+ComplexItrator.java - An iterator which keeps its last returned value. 
+OtherTokenTypeNeedHere.java - Thrown when expecting a specific token, but another appears.
+NotAllowedInThisContext.java - Thrown if a token unrelated to the context was parsed. 
+InvalidIdentityName.java - Thrown when trying to name a method or a variable with invalid name.
+
+AstNode.java - Representing a node in an abstract syntax tree.
+GlobalNode.java - Representing the AST root, the global code block.
+MethodNode.java - A method declaration.
+ArgumentNode.java - An argument of a method.
+ConditionalNode.java - An inner block, starts with a condition.
+IfNode.java, WhileNode.java - Conditional nodes. 
+ScopeNode.java - The code body of blocks like global, if, while and methods.
+ExpressionNode.java - Representing an expression.
+LiteralExpressionNode.java - A specific value expression, like a number, true, a character, etc..
+VarDeclaration.java - Representing a declaration of a variable.
+AssignmentNode.java - Representing an assignment of a variable with an expression.  
+CallMethodNode.java - 
+AndNode.java -	
+BinaryOpNode.java
+OrNode.java
+ReturnNode.java
+VarExpressionNode.java
+
+
+=============================
+=          Design           =
+=============================
+
+=============================
+=  Implementation details   =
+=============================
