@@ -1,6 +1,7 @@
 package parser;
 
 import ast.*;
+import ast.ExpressionNode.ExpressionType;
 import lexer.Position;
 import lexer.Token;
 import lexer.Tokenizer;
@@ -32,6 +33,7 @@ public class Parser {
             throw new OtherTokenTypeNeedHere(tok, requiredType);
         }
     }
+    
     public GlobalNode parseGlobal() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName
     {
         ScopeNode body = new ScopeNode(new Position(0,0));
@@ -43,19 +45,16 @@ public class Parser {
                     methods.add(parseFunctionDeclaration());
                 }
                 break;
-                case VAR_TYPE: {
-                    body.addAll(parseVariablesDeceleration(false));
+                case VAR_TYPE:
+                case FINAL:
+                {
+                    body.addAll(parseVariablesDeceleration());
                 }
                 break;
                 case IDENTITY:
                 {
                     //if the global call method is not allowed
                     body.add(parseAssignment());
-                }
-                break;
-                case FINAL:
-                {
-                    body.addAll(parseVariablesDeceleration(true));
                 }
                 break;
                 case NEW_LINE:
@@ -78,7 +77,7 @@ public class Parser {
         validateTokenType(tok, TokenType.IDENTITY);
 
         String methodName = tok.getData();
-        if (isValidateIdentityName(methodName))
+        if (!isValidIdentityName(methodName))
         {
             throw new InvalidIdentityName(tok);
         }
@@ -111,12 +110,11 @@ public class Parser {
                 }
                 break;
                 case VAR_TYPE:
-                {
-                    body.addAll(parseVariablesDeceleration(false));
+                case FINAL:
+				{
+                    body.addAll(parseVariablesDeceleration());
                 }
                 break;
-                case FINAL:
-                    body.addAll(parseVariablesDeceleration(true));
                 case IDENTITY:
                 {
                     body.add(parseIdentity());
@@ -208,56 +206,12 @@ public class Parser {
        do
         {
             tok = tokenizer.next();
-            switch(tok.getType())
+            if (tok.getType() == TokenType.CLOSE_PARENTHESES)
             {
-                case CLOSE_PARENTHESES:
-                {
-                    continue;
-                }
-                case IDENTITY:
-                {
-                    if (tokenizer.getNext().getType() == Token.TokenType.OPEN_PARENTHESES)
-                    {
-                        throw new NotAllowedInThisContext(tok);
-                    }
-                    args.add(new VarExpressionNode(tok.getStartPosition(), tok.getData()));
-                }
-                break;
-                case LITERAL_DOUBLE_NUMBER:
-                {
-                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                            ExpressionNode.ExpressionType.DOUBLE));
-                }
-                break;
-                case LITERAL_INT_NUMBER:
-                {
-                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                            ExpressionNode.ExpressionType.INT));
-                }
-                break;
-                case LITERAL_BOOLEAN:
-                {
-                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                            ExpressionNode.ExpressionType.BOOLEAN));
-                }
-                break;
-                case LITERAL_STRING:
-                {
-                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                            ExpressionNode.ExpressionType.STRING));
-                }
-                break;
-                case LITERAL_CHAR:
-                {
-                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                            ExpressionNode.ExpressionType.CHAR));
-                }
-                break;
-                default:
-                {
-                    throw new NotAllowedInThisContext(tok);
-                }
+                continue;
             }
+            args.add(convertValueTokenToExpression(tok));
+
             tok = tokenizer.next();
         } while (tok.getType() == TokenType.COMMA);
 
@@ -267,25 +221,13 @@ public class Parser {
 
     private ExpressionNode parseSingleCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         Token tok = tokenizer.next();
+
         switch (tok.getType()) {
-            case LITERAL_BOOLEAN: {
-                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                        ExpressionNode.ExpressionType.BOOLEAN);
-            }
-            case LITERAL_INT_NUMBER: {
-                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                        ExpressionNode.ExpressionType.INT);
-            }
-            case LITERAL_DOUBLE_NUMBER: {
-                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
-                        ExpressionNode.ExpressionType.DOUBLE);
-            }
+            case LITERAL_BOOLEAN:
+            case LITERAL_INT_NUMBER:
+            case LITERAL_DOUBLE_NUMBER:
             case IDENTITY: {
-                if (tokenizer.getNext().getType() == Token.TokenType.OPEN_PARENTHESES)
-                {
-                    throw new NotAllowedInThisContext(tok);
-                }
-                return new VarExpressionNode(tok.getStartPosition(), tok.getData());
+                return convertValueTokenToExpression(tok);
             }
             default: {
                 throw new NotAllowedInThisContext(tok);
@@ -293,24 +235,36 @@ public class Parser {
         }
 
     }
-    private ExpressionNode parseCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    
+	private ExpressionNode parseCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
-        Token prevCondition;
-        Token tok;
-        do
-        {
-            parseSingleCondition();
+
+        ExpressionNode condition = parseSingleCondition();
+
+        Token tok = tokenizer.next();
+        while (tok.getType() != TokenType.CLOSE_PARENTHESES) {
+        	switch (tok.getType())
+            {
+                case OR_OP:
+                {
+                    condition = new OrNode(tok.getStartPosition(),condition, parseSingleCondition());
+                }break;
+                case AND_OP:
+                {
+                    condition = new AndNode(tok.getStartPosition(),condition, parseSingleCondition());
+                }
+                break;
+                default:
+                {
+                    throw new NotAllowedInThisContext(tok);
+                }
+            }
             tok = tokenizer.next();
-            //TODO : when create the tree this code have to be more complex
-        }while ((tok.getType() == TokenType.OR_OP) || (tok.getType() == TokenType.AND_OP));
-
-        validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
-
-        //TODO:
-        return null;
+        }
+        return condition;
     }
 
-    private List<ArgumentNode> parseDecelerationArgs() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
+	private List<ArgumentNode> parseDecelerationArgs() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
         List<ArgumentNode> args = new ArrayList<ArgumentNode>();
         Token tok;
@@ -337,7 +291,7 @@ public class Parser {
             tok = tokenizer.next();
             validateTokenType(tok, TokenType.IDENTITY);
             String name = tok.getData();
-            if(!isValidateIdentityName(name))
+            if(!isValidIdentityName(name))
             {
                 throw new InvalidIdentityName(tok);
             }
@@ -351,7 +305,7 @@ public class Parser {
         return args;
     }
 
-    private List<AstNode> parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
+    private List<AstNode> parseVariablesDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
         boolean isFinal = false;
         List<AstNode> result = new LinkedList<AstNode>();
 
@@ -370,7 +324,7 @@ public class Parser {
             validateTokenType(tok, TokenType.IDENTITY);
             String varName = tok.getData();
 
-            if (isValidateIdentityName(varName))
+            if (!isValidIdentityName(varName))
             {
                 throw new InvalidIdentityName(tok);
             }
@@ -389,29 +343,56 @@ public class Parser {
 
         return result;
     }
-
-    private void parseAssignment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
-        validateTokenType(tokenizer.current(), TokenType.IDENTITY);
-        String varName = tokenizer.current().getData();
+    
+    private AssignmentNode parseAssignment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+        Token targetTok = tokenizer.current();
+    	validateTokenType(targetTok, TokenType.IDENTITY);
 
         validateNextTokenIs(TokenType.ASSIGNMENT_OP);
 
-        Token tok = tokenizer.next();
-        if(tok.getType() == TokenType.IDENTITY)
-        {
+        Token valueTok = tokenizer.next();
 
-        }
-        else if (isLiteralData(tok))
-        {
 
-        }
-        else
-        {
-            throw new NotAllowedInThisContext(tok);
+        ExpressionNode valueExpr = convertValueTokenToExpression(valueTok);
+        
+        return new AssignmentNode(targetTok.getStartPosition(), targetTok.getData(), valueExpr);
+    }
+
+    private ExpressionNode convertValueTokenToExpression(Token valueTok) throws NotAllowedInThisContext {
+        if (valueTok.getType() == TokenType.IDENTITY) {
+            if (tokenizer.getNext().getType() == Token.TokenType.OPEN_PARENTHESES)
+            {
+                throw new NotAllowedInThisContext(valueTok);
+            }
+
+            return new VarExpressionNode(valueTok.getStartPosition(), valueTok.getData());
+        } else if (isLiteralData(valueTok)) {
+        	return new LiteralExpressionNode(valueTok.getStartPosition(), valueTok.getData(),
+                                                convertTokenTypeToExpressionType(valueTok));
+        } else {
+            throw new NotAllowedInThisContext(valueTok);
         }
     }
 
-    private boolean isLiteralData(Token tok) {
+    private ExpressionType convertTokenTypeToExpressionType(Token tok) throws NotAllowedInThisContext {
+		switch (tok.getType()) 
+		{
+		case LITERAL_BOOLEAN:
+			return ExpressionType.BOOLEAN;
+        case LITERAL_DOUBLE_NUMBER:
+        	return ExpressionType.DOUBLE;
+        case LITERAL_INT_NUMBER:
+        	return ExpressionType.INT;
+        case LITERAL_STRING:
+        	return ExpressionType.STRING;
+        case LITERAL_CHAR:
+        	return ExpressionType.CHAR;
+    	default:
+        	throw new NotAllowedInThisContext(tok);
+		}
+	}
+
+	private boolean isLiteralData(Token tok) {
         switch (tok.getType())
         {
             case LITERAL_BOOLEAN:
@@ -425,17 +406,12 @@ public class Parser {
         }
     }
 
-    private boolean isValidateIdentityName(String identity)
+    private boolean isValidIdentityName(String identity)
     {
-        if (    (!Pattern.matches("\\w+", identity))    ||
-                (identity == "_")                       ||
-                (Pattern.matches("\\d+\\w+", identity)))
-        {
-            return false;
-        }
-
-        return true;
+    	return (Pattern.matches("\\w+", identity))&&
+                (!identity.equals("_")) &&
+                (!Pattern.matches("\\d+\\w+", identity));
     }
-
+    
     private ComplexItrator<Token> tokenizer;
 }
