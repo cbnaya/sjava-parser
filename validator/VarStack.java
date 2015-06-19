@@ -59,5 +59,4 @@ public class VarStack {
 
 
     ArrayList<ArrayList<Variable>> stack;
-    int currentIndex;
 }
