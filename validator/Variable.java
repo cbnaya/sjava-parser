@@ -1,34 +1,33 @@
 package validator;
 
-import lexer.Position;
+import ast.ExpressionNode;
 
 public class Variable {
 
 	private final String name;
-	private final ExpressionType type;
+	private final ExpressionNode.ExpressionType type;
 	private boolean hasValue, isFinal;
 	
-	public Variable(String name, ExpressionType type, boolean isFinal) {
+	public Variable(String name, ExpressionNode.ExpressionType type, boolean isFinal) {
 		this.name = name;
 		this.type = type;
-		value = false;
+		hasValue = false;
 		this.isFinal = isFinal;
 	}
 	
-	public boolean assign(expressionType valueType) {
-		if (type.accept(value) && (!hasValue || !isFinal)) {
-			hasValue = true;
-			return true;
-		}
-		return false;
-		}
-	}
+	public boolean assign(ExpressionNode.ExpressionType valueType) {
+        if (type.accept(valueType) && (!hasValue || !isFinal)) {
+            hasValue = true;
+            return true;
+        }
+        return false;
+    }
 
 	public String getName() {
 		return name;
 	}
 	
-	public ExpressionType getType() {
+	public ExpressionNode.ExpressionType getType() {
 		return type;
 	}
 	
