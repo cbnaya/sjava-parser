@@ -5,21 +5,37 @@ import lexer.Position;
 /**
  * Created by cbnaya on 14/06/2015.
  */
-public class AstNode {
-    public AstNode(Position position)
+public abstract class AstNode {
+
+    public static enum NodeType
     {
-        //this.parent = parent;
+        RETURN,
+        CODE_SCOPE,
+        METHOD,
+        GLOBAL,
+        WHILE,
+        IF,
+        VAR_DECLARATION,
+        CALL_METHOD,
+        ASSIGNMENT,
+        LITERAL,
+        VAR_VAL,
+        OR,
+        AND
+    }
+
+	public AstNode(Position position)
+    {
         this.position = position;
     }
+
+    public abstract NodeType getNodeType();
 
     public Position getPosition() {
         return position;
     }
 
-    //public AstNode getParent() {
-    //    return parent;
-    //}
 
     private Position position;
-    //private AstNode parent;
+
 }
