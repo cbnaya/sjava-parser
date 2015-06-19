@@ -28,4 +28,9 @@ public class ArgumentNode extends AstNode {
     public boolean isFinal() {
         return isFinal;
     }
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.ARGUMENT;
+    }
 }
