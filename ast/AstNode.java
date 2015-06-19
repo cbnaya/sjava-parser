@@ -12,6 +12,7 @@ public abstract class AstNode {
         RETURN,
         CODE_SCOPE,
         METHOD,
+        ARGUMENT,
         GLOBAL,
         WHILE,
         IF,
