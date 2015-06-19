@@ -1,8 +1,13 @@
 package parser;
 
+import ast.*;
+import lexer.Position;
 import lexer.Token;
 import lexer.Tokenizer;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static lexer.Token.TokenType;
@@ -27,44 +32,45 @@ public class Parser {
             throw new OtherTokenTypeNeedHere(tok, requiredType);
         }
     }
-
-    public void parseGlobal() throws NotAllowedInThisContext,
-            OtherTokenTypeNeedHere, InvalidIdentityName {
+    public GlobalNode parseGlobal() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName
+    {
+        ScopeNode body = new ScopeNode(new Position(0,0));
+        List<MethodNode> methods = new ArrayList<MethodNode>();
         while (tokenizer.hasNext()) {
             Token tok = tokenizer.next();
-
             switch (tok.getType()) {
                 case FUNCTION_DECLARE: {
-                    parseFunctionDeclaration();
+                    methods.add(parseFunctionDeclaration());
                 }
                 break;
                 case VAR_TYPE: {
-                    parseVariableDeceleration();
+                    body.addAll(parseVariablesDeceleration(false));
                 }
                 break;
                 case IDENTITY:
                 {
                     //if the global call method is not allowed
-                    parseAssignment();
+                    body.add(parseAssignment());
                 }
+                break;
                 case FINAL:
                 {
-                    //TODO:
+                    body.addAll(parseVariablesDeceleration(true));
                 }
                 break;
                 case NEW_LINE:
-                break;
-                case EOF: {
-                    return;
-                }
+                    break;
+                case EOF:
+                    break;
                 default: {
                     throw new NotAllowedInThisContext(tok);
                 }
             }
         }
+        return new GlobalNode(body, methods);
     }
 
-    private void parseFunctionDeclaration() throws NotAllowedInThisContext,
+    private MethodNode parseFunctionDeclaration() throws NotAllowedInThisContext,
             OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), Token.TokenType.FUNCTION_DECLARE);
 
@@ -76,43 +82,49 @@ public class Parser {
         {
             throw new InvalidIdentityName(tok);
         }
-        parseDecelerationArgs();
-        codeSegment();
+
+        List<ArgumentNode> args = parseDecelerationArgs();
+        ScopeNode body = codeSegment();
+        return new MethodNode(tok.getStartPosition(), methodName,args, body);
     }
 
 
-    private void codeSegment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
+    private ScopeNode codeSegment() throws NotAllowedInThisContext,
+            OtherTokenTypeNeedHere, InvalidIdentityName {
         validateNextTokenIs(TokenType.OPEN_BRACES);
         validateNextTokenIs(TokenType.NEW_LINE);
 
         Token tok = tokenizer.next();
+        ScopeNode body = new ScopeNode(tok.getStartPosition());
         do
         {
             switch(tok.getType())
             {
                 case IF:
                 {
-                    parseIf();
+                    body.add(parseIf());
                 }
                 break;
                 case WHILE_LOOP:
                 {
-                    parseWhile();
+                    body.add(parseWhile());
                 }
                 break;
                 case VAR_TYPE:
                 {
-                    parseVariableDeceleration();
+                    body.addAll(parseVariablesDeceleration(false));
                 }
                 break;
+                case FINAL:
+                    body.addAll(parseVariablesDeceleration(true));
                 case IDENTITY:
                 {
-                    parseIdentity();
+                    body.add(parseIdentity());
                 }
                 break;
                 case RETURN_OP:
                 {
-                    parseReturn();
+                    body.add(parseReturn());
                 }
                 break;
                 case CLOSE_BRACES:
@@ -126,32 +138,32 @@ public class Parser {
             }
 
             tok = tokenizer.next();
-        }while (tok.getType() != TokenType.CLOSE_BRACES);
+        } while (tok.getType() != TokenType.CLOSE_BRACES);
 
         validateNextTokenIs(TokenType.NEW_LINE);
+        return body;
     }
 
-    private void parseReturn() throws OtherTokenTypeNeedHere {
+    private ReturnNode parseReturn() throws OtherTokenTypeNeedHere {
         validateTokenType(tokenizer.current(), TokenType.RETURN_OP);
         validateNextTokenIs(TokenType.END_OF_STATEMENT);
         validateNextTokenIs(TokenType.NEW_LINE);
+        return new ReturnNode(tokenizer.current().getStartPosition());
     }
 
-    private void parseIdentity() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private AstNode parseIdentity() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
         validateTokenType(tokenizer.current(), TokenType.IDENTITY);
 
         switch (tokenizer.getNext().getType())
         {
             case OPEN_PARENTHESES:
             {
-                parseCallMethod();
+                return parseCallMethod();
             }
-            break;
             case ASSIGNMENT_OP:
             {
-                parseAssignment();
+                return parseAssignment();
             }
-            break;
             default:
             {
                 throw new NotAllowedInThisContext(tokenizer.getNext());
@@ -159,28 +171,39 @@ public class Parser {
         }
     }
 
-    private void parseWhile() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
+    private WhileNode parseWhile() throws NotAllowedInThisContext, OtherTokenTypeNeedHere,
+            InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.WHILE_LOOP);
-        parseCondition();
-        codeSegment();
+        ExpressionNode condition = parseCondition();
+        ScopeNode body = codeSegment();
+
+        return new WhileNode(tokenizer.current().getStartPosition(), condition, body);
     }
 
-    private void parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
+
+    private IfNode parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.IF);
-        parseCondition();
-        codeSegment();
+        ExpressionNode condition = parseCondition();
+        ScopeNode body = codeSegment();
+
+        return new IfNode(tokenizer.current().getStartPosition(), condition, body);
     }
 
-    private void parseCallMethod() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private CallMethodNode parseCallMethod() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
         validateTokenType(tokenizer.current(), TokenType.IDENTITY);
         String methodName = tokenizer.current().getData();
-        parseCallArguments();
+        List<ExpressionNode> args = parseCallArguments();
         validateNextTokenIs(Token.TokenType.END_OF_STATEMENT);
         validateNextTokenIs(Token.TokenType.NEW_LINE);
+
+        return new CallMethodNode(tokenizer.current().getStartPosition(),
+                methodName, args);
     }
 
-    private void parseCallArguments() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private List<ExpressionNode> parseCallArguments() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
+        List<ExpressionNode> args = new ArrayList<ExpressionNode>();
+
         Token tok;
        do
         {
@@ -193,16 +216,43 @@ public class Parser {
                 }
                 case IDENTITY:
                 {
-
+                    if (tokenizer.getNext().getType() == Token.TokenType.OPEN_PARENTHESES)
+                    {
+                        throw new NotAllowedInThisContext(tok);
+                    }
+                    args.add(new VarExpressionNode(tok.getStartPosition(), tok.getData()));
                 }
                 break;
                 case LITERAL_DOUBLE_NUMBER:
+                {
+                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                            ExpressionNode.ExpressionType.DOUBLE));
+                }
+                break;
                 case LITERAL_INT_NUMBER:
+                {
+                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                            ExpressionNode.ExpressionType.INT));
+                }
+                break;
                 case LITERAL_BOOLEAN:
+                {
+                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                            ExpressionNode.ExpressionType.BOOLEAN));
+                }
+                break;
                 case LITERAL_STRING:
                 {
-
-                }break;
+                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                            ExpressionNode.ExpressionType.STRING));
+                }
+                break;
+                case LITERAL_CHAR:
+                {
+                    args.add(new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                            ExpressionNode.ExpressionType.CHAR));
+                }
+                break;
                 default:
                 {
                     throw new NotAllowedInThisContext(tok);
@@ -212,37 +262,38 @@ public class Parser {
         } while (tok.getType() == TokenType.COMMA);
 
         validateTokenType(tok,TokenType.CLOSE_PARENTHESES);
+        return args;
     }
 
-    private void parseSingleCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    private ExpressionNode parseSingleCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         Token tok = tokenizer.next();
         switch (tok.getType()) {
             case LITERAL_BOOLEAN: {
-
+                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                        ExpressionNode.ExpressionType.BOOLEAN);
             }
-            break;
             case LITERAL_INT_NUMBER: {
-
+                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                        ExpressionNode.ExpressionType.INT);
             }
-            break;
             case LITERAL_DOUBLE_NUMBER: {
-
+                return new LiteralExpressionNode(tok.getStartPosition(), tok.getData(),
+                        ExpressionNode.ExpressionType.DOUBLE);
             }
-            break;
             case IDENTITY: {
                 if (tokenizer.getNext().getType() == Token.TokenType.OPEN_PARENTHESES)
                 {
                     throw new NotAllowedInThisContext(tok);
                 }
+                return new VarExpressionNode(tok.getStartPosition(), tok.getData());
             }
-            break;
             default: {
                 throw new NotAllowedInThisContext(tok);
             }
         }
 
     }
-    private void parseCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
+    private ExpressionNode parseCondition() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
         Token prevCondition;
         Token tok;
@@ -254,10 +305,14 @@ public class Parser {
         }while ((tok.getType() == TokenType.OR_OP) || (tok.getType() == TokenType.AND_OP));
 
         validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
+
+        //TODO:
+        return null;
     }
 
-    private void parseDecelerationArgs() throws OtherTokenTypeNeedHere, NotAllowedInThisContext {
+    private List<ArgumentNode> parseDecelerationArgs() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
+        List<ArgumentNode> args = new ArrayList<ArgumentNode>();
         Token tok;
 
         do
@@ -282,16 +337,32 @@ public class Parser {
             tok = tokenizer.next();
             validateTokenType(tok, TokenType.IDENTITY);
             String name = tok.getData();
+            if(!isValidateIdentityName(name))
+            {
+                throw new InvalidIdentityName(tok);
+            }
+
+            args.add(new ArgumentNode(tok.getStartPosition(), type, tok.getData(), isFinal));
 
             tok = tokenizer.next();
         }while (tok.getType() == TokenType.COMMA);
 
         validateTokenType(tok, TokenType.CLOSE_PARENTHESES);
+        return args;
     }
 
-    private void parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
+    private List<AstNode> parseVariableDeceleration() throws OtherTokenTypeNeedHere, NotAllowedInThisContext, InvalidIdentityName {
+        boolean isFinal = false;
+        List<AstNode> result = new LinkedList<AstNode>();
+
+        if (tokenizer.current().getType() == TokenType.FINAL)
+        {
+            isFinal = true;
+            tokenizer.next();
+        }
+
         validateTokenType(tokenizer.current(), TokenType.VAR_TYPE);
-        String Type = tokenizer.current().getData();
+        String type = tokenizer.current().getData();
 
         Token tok;
         do {
@@ -303,10 +374,11 @@ public class Parser {
             {
                 throw new InvalidIdentityName(tok);
             }
+            result.add(new VarDeclaration(tok.getStartPosition(), type,varName, isFinal));
 
             if (tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
             {
-                   parseAssignment();
+                   result.add(parseAssignment());
             }
 
             tok = tokenizer.next();
@@ -314,6 +386,8 @@ public class Parser {
 
         validateTokenType(tok, TokenType.END_OF_STATEMENT);
         validateNextTokenIs(TokenType.NEW_LINE);
+
+        return result;
     }
 
     private void parseAssignment() throws NotAllowedInThisContext, OtherTokenTypeNeedHere {
