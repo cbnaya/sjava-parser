@@ -24,15 +24,16 @@ IfNode.java, WhileNode.java - Conditional nodes.
 ScopeNode.java - The code body of blocks like global, if, while and methods.
 ExpressionNode.java - Representing an expression.
 LiteralExpressionNode.java - A specific value expression, like a number, true, a character, etc..
+VarExpressionNode.java - An expression of referencing a name of a variable.
+BinaryOpNode.java - A node of boolean binary oprator, consiting two expressions.
+AndNode.java -	"&&" binary operator.
+OrNode.java - "||" binary operator.
 VarDeclaration.java - Representing a declaration of a variable.
 AssignmentNode.java - Representing an assignment of a variable with an expression.  
-CallMethodNode.java - 
-AndNode.java -	
-BinaryOpNode.java
-OrNode.java
-ReturnNode.java
-VarExpressionNode.java
+CallMethodNode.java - A node for calling a method.
+ReturnNode.java - Representing a return statement.
 
+AstValidator.java - 
 
 =============================
 =          Design           =
