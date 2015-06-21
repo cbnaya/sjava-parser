@@ -8,16 +8,16 @@ import lexer.Position;
 public class ArgumentNode extends AstNode {
     public ArgumentNode(Position position, String argType, String argName, boolean isFinal) {
         super(position);
-        type = argType;
+        type = ExpressionNode.ExpressionType.valueOf(argType.toUpperCase());
         name = argName;
         this.isFinal = isFinal;
     }
 
-    private String type;
+    private ExpressionNode.ExpressionType type;
     private String name;
     private boolean isFinal;
 
-    public String getType() {
+    public ExpressionNode.ExpressionType getType() {
         return type;
     }
 
