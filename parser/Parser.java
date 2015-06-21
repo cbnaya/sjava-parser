@@ -2,7 +2,6 @@ package parser;
 
 import ast.*;
 import ast.ExpressionNode.ExpressionType;
-import lexer.Position;
 import lexer.Token;
 import lexer.Tokenizer;
 
@@ -328,7 +327,7 @@ public class Parser {
             {
                 throw new InvalidIdentityName(tok);
             }
-            result.add(new VarDeclaration(tok.getStartPosition(), type,varName, isFinal));
+            result.add(new VarDeclarationNode(tok.getStartPosition(), type,varName, isFinal));
 
             if (tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
             {
