@@ -1,7 +1,6 @@
 package oop.ex6.ast;
 
 import oop.ex6.lexer.Position;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class VarExpressionNode extends ExpressionNode {
 
@@ -19,7 +18,7 @@ public class VarExpressionNode extends ExpressionNode {
     
     @Override
     public ExpressionType getType() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

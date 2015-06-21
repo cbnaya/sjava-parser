@@ -1,7 +1,5 @@
 package oop.ex6.lexer;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
@@ -90,6 +88,6 @@ public class Tokenizer implements Iterator<Token>{
 
     @Override
     public void remove() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
