@@ -26,7 +26,7 @@ public class Token {
         OR_OP("\\|\\|"),
         RETURN_OP("return\\b"),
         COMMA(","),
-        FINAL("final\b"),
+        FINAL("final\\b"),
         VAR_TYPE("(boolean\\b)|(char\\b)|(String\\b)|(int\\b)|double\\b"),
         LITERAL_DOUBLE_NUMBER("-?\\d+\\.\\d+"),
         LITERAL_INT_NUMBER("-?\\d+"),
