@@ -28,7 +28,7 @@ AstNode.java - 			Representing a node in an abstract syntax tree.
 ScopeNode.java -		A code block like global, if, while and methods.
 GlobalNode.java - 		Representing the AST root, the global code scope.
 MethodNode.java - 		A method declaration.
-ArgumentNode.java -		An argument of a method.
+ArgumentNode.java -		An argument of a method, extends VarDeclarationNode.
 ConditionalNode.java - 	An inner block, starts with a condition.
 IfNode.java, WhileNode.java - Conditional nodes. 
 ExpressionNode.java - 	Representing an expression.
@@ -40,7 +40,7 @@ BinaryOpNode.java - 	A node of boolean binary oprator, consiting two
 						expressions.
 AndNode.java - 			"&&" binary operator.
 OrNode.java - 			"||" binary operator.
-VarDeclaration.java - 	Representing a declaration of a variable.
+VarDeclarationNode.java - 	Representing a declaration of a variable.
 AssignmentNode.java - 	Representing an assignment of a variable with an 
 						expression.  
 CallMethodNode.java - 	A node for calling a method.
