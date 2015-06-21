@@ -18,12 +18,12 @@ public class AstValidator {
 
     }
 
-    public void run(ScopeNode codeScope) throws VarDuplicateDeclaration, RequiredVarDoseNotExistException, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, NumOfArgumentsNotMatchException {
+    public void run(ScopeNode codeScope) throws VarDuplicateDeclaration, RequiredVarDoseNotExistException, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, NumOfArgumentsNotMatchException, FinalAssignmentException {
         validateCodeScope(codeScope, false);
     }
 
 
-    public void run(MethodNode method) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException {
+    public void run(MethodNode method) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException, FinalAssignmentException {
         validateFunction(method);
     }
 
@@ -32,7 +32,17 @@ public class AstValidator {
         return stack;
     }
 
-    public static VarStack getGlobalVariableStack(GlobalNode globalNode) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, NumOfArgumentsNotMatchException {
+    public static void globalValidate(GlobalNode globalNode) throws VarDuplicateDeclaration,
+            RequiredVarDoseNotExistException, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, NumOfArgumentsNotMatchException, MethodMustEndWithReturnException, FinalAssignmentException {
+        for (MethodNode method:globalNode.getMethods())
+        {
+            VarStack varStack = getGlobalVariableStack(globalNode);
+            AstValidator astValidator = new AstValidator(varStack, globalNode.getMethods());
+            astValidator.run(method);
+        }
+    }
+
+    public static VarStack getGlobalVariableStack(GlobalNode globalNode) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, NumOfArgumentsNotMatchException, FinalAssignmentException {
         VarStack stack = new VarStack();
         stack.enterScope();
 
@@ -42,7 +52,7 @@ public class AstValidator {
         return astValidator.getStack();
     }
 
-    private void validateFunction(MethodNode methodNode) throws VarDuplicateDeclaration, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException, MethodNotExistsException, RequiredVarDoseNotExistException, VarNeverAssignedException, TypeMisMatchException {
+    private void validateFunction(MethodNode methodNode) throws VarDuplicateDeclaration, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException, MethodNotExistsException, RequiredVarDoseNotExistException, VarNeverAssignedException, TypeMisMatchException, FinalAssignmentException {
         stack.enterScope();
 
         for (ArgumentNode arg : methodNode.getArgs()) {
@@ -60,21 +70,21 @@ public class AstValidator {
     }
 
     private void validateCodeScope(ScopeNode scopeNode) throws VarDuplicateDeclaration,
-                                                                RequiredVarDoseNotExistException,
-                                                                MethodNotExistsException,
-                                                                TypeMisMatchException,
-                                                                VarNeverAssignedException,
-            NumOfArgumentsNotMatchException {
+            RequiredVarDoseNotExistException,
+            MethodNotExistsException,
+            TypeMisMatchException,
+            VarNeverAssignedException,
+            NumOfArgumentsNotMatchException, FinalAssignmentException {
         validateCodeScope(scopeNode, true);
     }
 
     private void validateCodeScope(ScopeNode scopeNode, boolean isDifferentNameScope)
-                                                    throws VarDuplicateDeclaration,
-                                                            VarNeverAssignedException,
+            throws VarDuplicateDeclaration,
+            VarNeverAssignedException,
             NumOfArgumentsNotMatchException,
-                                                            MethodNotExistsException,
-                                                            TypeMisMatchException,
-                                                            RequiredVarDoseNotExistException {
+            MethodNotExistsException,
+            TypeMisMatchException,
+            RequiredVarDoseNotExistException, FinalAssignmentException {
         if (isDifferentNameScope) {
             stack.enterScope();
         }
@@ -94,6 +104,10 @@ public class AstValidator {
                     ExpressionNode.ExpressionType valueType = getExpressionType(value);
                     Variable var = stack.get(assignmentNode);
 
+                    if ((var.isFinal()) && (var.hasValue()))
+                    {
+                        throw new FinalAssignmentException(assignmentNode);
+                    }
                     if(!var.assign(valueType))
                     {
                         throw new TypeMisMatchException(var.getName(), var.getType(), valueType,
