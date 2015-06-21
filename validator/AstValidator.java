@@ -1,154 +1,201 @@
 package validator;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import lexer.Tokenizer;
 import ast.*;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class AstValidator {
 
-	public static void main(String[] args) {
-		for (int i = 1; i < 10; i++) {
-			System.out.println("20"+i);
-			String fileName = "C:/Users/Noam/SkyDrive/JavaWorkspace"
-					+ "/ex6_sJavaVerifier/tests/test20" + i + ".sjava";
-			try {
-				AstValidator validator = new AstValidator(fileName);
-				validator.validate();
-			} catch (Exception | NotAllowedInThisContext | OtherTokenTypeNeedHere | InvalidIdentityName e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public static final String CONDITION_NAME = "condition";
+    private VarStack stack;
+    private List<MethodNode> methodList;
 
-	private GlobalNode root;
-	
-	public AstValidator(String fileName) throws IOException, NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
-		String fileData = new String(Files.readAllBytes( Paths.get(fileName)), 
-				StandardCharsets.UTF_8);
-		root = new Parser(new Tokenizer(fileData)).parseGlobal();
-	}
-	
-	public void validate() throws HowDidYouGetHereException {
-		System.out.println(root);
-		ScopeNode scope = root.getBody();
-		System.out.println(" "+scope);
-		for (AstNode node : scope.getBody()) {
-			System.out.println("  "+node);
-			variablesCheck(node, "  ");
-		}
-		for (MethodNode method : root.getMethods()) {
-			methodIterate(method, "  ");
-		}
-	}
-	
-	private void variablesCheck(AstNode node, String spaces) throws HowDidYouGetHereException {
-		switch (node.getNodeType()) {
-		case VAR_DECLARATION:
-			varDeclarationCheck((VarDeclaration) node, spaces+" ");
-			break;
-		case ASSIGNMENT:
-			assignmentCheck((AssignmentNode) node, spaces+" ");
-			break;
-		default:
-			throw new HowDidYouGetHereException();
-		}
-	}
+    public AstValidator(VarStack stack, List<MethodNode> methodList)
+    {
+        this.stack = stack;
+        this.methodList = methodList;
 
-	private void methodIterate(MethodNode method, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+method);
-		System.out.println(spaces+method.getName());
-		for (ArgumentNode arg : method.getArgs()) {
-			argCheck(arg, spaces+" ");
-		}
-		scopeIterate(method.getBody(), spaces+" ");
-	}
-	
-	private void argCheck(ArgumentNode arg, String spaces) {
-		System.out.println(spaces+arg);
-		System.out.println(spaces+arg.isFinal() + " " + arg.getType() + " " + 
-				arg.getName());
-	}
-	
-	private void scopeIterate(ScopeNode scope, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+scope);
-		for (AstNode node : scope.getBody()) {
-			astIterate(node, spaces+" ");
-		}
-	}
+    }
 
-	private void astIterate(AstNode node, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+node);
-		switch (node.getNodeType()) {
-		case WHILE:
-		case IF:
-			conditionalIterate((ConditionalNode) node, spaces+" ");
-			break;
-		case CALL_METHOD:
-			callIterate((CallMethodNode) node, spaces+" ");
-			break;
-		case RETURN:
-			break;
-		default:
-			variablesCheck(node, spaces);
-			break;
-		}
-	}
-	
-	private void varDeclarationCheck(VarDeclaration var, String spaces) {
-		System.out.println(spaces+var.isFinal() + " " + var.getType() + " " + 
-				var.getName());
-	}
-	
-	private void assignmentCheck(AssignmentNode assignment, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+assignment.getName());
-		expressionIterate(assignment.getValue(), spaces+" ");
-	}
-	
-	private void conditionalIterate(ConditionalNode conditional, String spaces) throws HowDidYouGetHereException {
-		expressionIterate(conditional.getCondition(), spaces+" ");
-		scopeIterate(conditional.getBody(), spaces+" ");
-	}
+    public void run(ScopeNode codeScope) throws VarDuplicateDeclaration, RequiredVarDoseNotExistException, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, NumOfArgumentsNotMatchException {
+        validateCodeScope(codeScope, false);
+    }
 
-	private void callIterate(CallMethodNode call, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+call.getName());
-		for (ExpressionNode arg : call.getArgs()) {
-			expressionIterate(arg, spaces+" ");
-		}	
-	}
 
-	private void expressionIterate(ExpressionNode expression, String spaces) throws HowDidYouGetHereException {
-		System.out.println(spaces+expression);
-		switch (expression.getNodeType()) {
-		case LITERAL:
-			literalCheck((LiteralExpressionNode) expression, spaces+" ");
-			break;
-		case VAR_VAL:
-			varValueCheck((VarExpressionNode) expression, spaces+" ");
-			break;
-		case OR:
-		case AND:
-			binaryOperatorIterate((BinaryOpNode) expression, spaces+" ");
-			break;
-		default:
-			throw new HowDidYouGetHereException();
-		}		
-	}
-	
-	private void literalCheck(LiteralExpressionNode literal, String spaces) {
-		System.out.println(spaces+literal.getType() + " " + literal.getValue());
-	}
+    public void run(MethodNode method) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException {
+        validateFunction(method);
+    }
 
-	private void varValueCheck(VarExpressionNode varExpr, String spaces) {
-		System.out.println(spaces+varExpr.getName());
-	}
-	
-	private void binaryOperatorIterate(BinaryOpNode operator, String spaces) throws HowDidYouGetHereException {
-		expressionIterate(operator.getLeft(), spaces+" ");
-		expressionIterate(operator.getRight(), spaces+" ");
-	}
+    public VarStack getStack()
+    {
+        return stack;
+    }
 
+    public static VarStack getGlobalVariableStack(GlobalNode globalNode) throws VarDuplicateDeclaration, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, RequiredVarDoseNotExistException, NumOfArgumentsNotMatchException {
+        VarStack stack = new VarStack();
+        stack.enterScope();
+
+        AstValidator astValidator = new AstValidator(stack, globalNode.getMethods());
+        astValidator.run(globalNode);
+
+        return astValidator.getStack();
+    }
+
+    private void validateFunction(MethodNode methodNode) throws VarDuplicateDeclaration, MethodMustEndWithReturnException, NumOfArgumentsNotMatchException, MethodNotExistsException, RequiredVarDoseNotExistException, VarNeverAssignedException, TypeMisMatchException {
+        stack.enterScope();
+
+        for (ArgumentNode arg : methodNode.getArgs()) {
+            Variable var = stack.add(arg);
+            var.assign(var.getType());
+        }
+
+        validateCodeScope(methodNode, false);
+        stack.exitScope();
+
+        List<AstNode> s = methodNode.getBody();
+        if (s.get(s.size() - 1).getNodeType() != AstNode.NodeType.RETURN) {
+            throw new MethodMustEndWithReturnException(methodNode);
+        }
+    }
+
+    private void validateCodeScope(ScopeNode scopeNode) throws VarDuplicateDeclaration,
+                                                                RequiredVarDoseNotExistException,
+                                                                MethodNotExistsException,
+                                                                TypeMisMatchException,
+                                                                VarNeverAssignedException,
+            NumOfArgumentsNotMatchException {
+        validateCodeScope(scopeNode, true);
+    }
+
+    private void validateCodeScope(ScopeNode scopeNode, boolean isDifferentNameScope)
+                                                    throws VarDuplicateDeclaration,
+                                                            VarNeverAssignedException,
+            NumOfArgumentsNotMatchException,
+                                                            MethodNotExistsException,
+                                                            TypeMisMatchException,
+                                                            RequiredVarDoseNotExistException {
+        if (isDifferentNameScope) {
+            stack.enterScope();
+        }
+
+        for (AstNode node : scopeNode.getBody()) {
+            switch (node.getNodeType()) {
+                case VAR_DECLARATION: {
+                    VarDeclarationNode varDeclaration = (VarDeclarationNode) node;
+                    stack.add(varDeclaration);
+                }
+                break;
+                case ASSIGNMENT: {
+                    AssignmentNode assignmentNode = (AssignmentNode) node;
+
+                    ExpressionNode value = assignmentNode.getValue();
+                    validateExpression(value);
+                    ExpressionNode.ExpressionType valueType = getExpressionType(value);
+                    Variable var = stack.get(assignmentNode);
+
+                    if(!var.assign(valueType))
+                    {
+                        throw new TypeMisMatchException(var.getName(), var.getType(), valueType,
+                                assignmentNode.getPosition());
+                    }
+                }
+                break;
+
+                case WHILE:
+                case IF: {
+                    ConditionalNode conditionalNode = (ConditionalNode) node;
+                    validateCondition(conditionalNode.getCondition());
+                    validateCodeScope(conditionalNode);
+                }
+                break;
+                case CALL_METHOD: {
+                    CallMethodNode callMethodNode = (CallMethodNode) node;
+                    validateCallMethod(callMethodNode);
+                }
+                break;
+                case RETURN:
+                    break;
+            }
+        }
+
+        if (isDifferentNameScope) {
+            stack.exitScope();
+        }
+    }
+
+    private void validateExpression(ExpressionNode value) throws VarNeverAssignedException,
+                                                                RequiredVarDoseNotExistException {
+        if (value.getNodeType() == AstNode.NodeType.VAR_VAL) {
+            VarExpressionNode var = (VarExpressionNode) value;
+            Variable valueVar = stack.get(var);
+
+            if (!valueVar.hasValue()) {
+                throw new VarNeverAssignedException(var);
+            }
+        }
+    }
+
+    private void validateCallMethod(CallMethodNode callMethodNode) throws NumOfArgumentsNotMatchException,
+                                                                            TypeMisMatchException,
+                                                                            MethodNotExistsException {
+        MethodNode methodNode = getMethod(callMethodNode);
+
+        if (callMethodNode.getArgs().size() != methodNode.getArgs().size()) {
+            throw new NumOfArgumentsNotMatchException(callMethodNode, methodNode);
+        }
+
+        //Iterator<ExpressionNode> argValue = callMethodNode.getArgs().iterator();
+        Iterator<ArgumentNode> args  = methodNode.getArgs().iterator();
+
+        for (ExpressionNode argValue : callMethodNode.getArgs()) {
+            ArgumentNode argumentNode = args.next();
+            if(!argumentNode.getType().accept(argValue.getType()))
+            {
+                throw new TypeMisMatchException(argumentNode.getName(), argumentNode.getType(),
+                                                            argValue.getType(),argValue.getPosition());
+            }
+        }
+    }
+
+    private MethodNode getMethod(CallMethodNode callMethodNode) throws MethodNotExistsException {
+        for (MethodNode methodNode : methodList) {
+            if (methodNode.getName().equals(callMethodNode.getName())) {
+                return methodNode;
+            }
+        }
+        throw new MethodNotExistsException(callMethodNode);
+    }
+
+    private void validateCondition(ExpressionNode condition) throws VarNeverAssignedException,
+            TypeMisMatchException, RequiredVarDoseNotExistException {
+        if ((condition.getNodeType() == AstNode.NodeType.OR)||
+                (condition.getNodeType() == AstNode.NodeType.AND))
+        {
+            BinaryOpNode binaryOpNode = (BinaryOpNode) condition;
+            validateCondition(binaryOpNode.getLeft());
+            validateCondition(binaryOpNode.getRight());
+        }
+        else
+        {
+            validateExpression(condition);
+            ExpressionNode.ExpressionType expressionType = getExpressionType(condition);
+            if (!ExpressionNode.ExpressionType.BOOLEAN.accept(expressionType))
+            {
+                throw new TypeMisMatchException(CONDITION_NAME, ExpressionNode.ExpressionType.BOOLEAN,
+                                                                    expressionType, condition.getPosition());
+            }
+        }
+    }
+
+
+    private ExpressionNode.ExpressionType getExpressionType(ExpressionNode value) throws RequiredVarDoseNotExistException {
+        if (value.getNodeType() == AstNode.NodeType.VAR_VAL) {
+            VarExpressionNode valueVarNode = (VarExpressionNode) value;
+            Variable valueVar = stack.get(valueVarNode);
+            return valueVar.getType();
+        }
+
+        return value.getType();
+    }
 }
