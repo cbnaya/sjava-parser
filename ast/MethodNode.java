@@ -4,14 +4,13 @@ import lexer.Position;
 
 import java.util.List;
 
-public class MethodNode extends AstNode {
+public class MethodNode extends ScopeNode{
 
-    public MethodNode(Position position, String methodName, List<ArgumentNode> methodArgs, ScopeNode
+    public MethodNode(Position position, String methodName, List<ArgumentNode> methodArgs, List<AstNode>
             methodBody) {
-        super(position);
+        super(position, methodBody);
         name = methodName;
         arguments = methodArgs;
-        body = methodBody;
     }
 
     public List<ArgumentNode> getArgs() {
@@ -22,13 +21,10 @@ public class MethodNode extends AstNode {
         return name;
     }
 
-    public ScopeNode getBody() {
-        return body;
-    }
 
     private final List<ArgumentNode> arguments;
     private final String name;
-    private final ScopeNode body;
+
 
     @Override
     public NodeType getNodeType() {

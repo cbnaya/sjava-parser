@@ -4,25 +4,19 @@ import lexer.Position;
 
 import java.util.List;
 
-public class GlobalNode extends AstNode {
+public class GlobalNode extends ScopeNode {
 
     private List<MethodNode> methods;
-    private ScopeNode body;
 	
-	public GlobalNode(ScopeNode globalBody, List<MethodNode> globalMethods) {
-		super(new Position(0,0));
+	public GlobalNode(List<AstNode> globalBody, List<MethodNode> globalMethods) {
+		super(new Position(0,0), globalBody);
 
 		methods = globalMethods;
-        body = globalBody;
 	}
 	
 	public List<MethodNode> getMethods() {
 		return methods;
 	}
-
-    public ScopeNode getBody() {
-        return body;
-    }
 
     @Override
     public NodeType getNodeType() {

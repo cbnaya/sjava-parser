@@ -36,7 +36,7 @@ public class Parser {
     
     public GlobalNode parseGlobal() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName
     {
-        ScopeNode body = new ScopeNode(new Position(0,0));
+        List<AstNode> body = new LinkedList<AstNode>();
         List<MethodNode> methods = new ArrayList<MethodNode>();
         while (tokenizer.hasNext()) {
             Token tok = tokenizer.next();
@@ -83,18 +83,18 @@ public class Parser {
         }
 
         List<ArgumentNode> args = parseDecelerationArgs();
-        ScopeNode body = codeSegment();
+        List<AstNode> body = codeSegment();
         return new MethodNode(tok.getStartPosition(), methodName,args, body);
     }
 
 
-    private ScopeNode codeSegment() throws NotAllowedInThisContext,
+    private List<AstNode> codeSegment() throws NotAllowedInThisContext,
             OtherTokenTypeNeedHere, InvalidIdentityName {
         validateNextTokenIs(TokenType.OPEN_BRACES);
         validateNextTokenIs(TokenType.NEW_LINE);
 
         Token tok = tokenizer.next();
-        ScopeNode body = new ScopeNode(tok.getStartPosition());
+        List<AstNode> body = new LinkedList<AstNode>();
         do
         {
             switch(tok.getType())
@@ -173,7 +173,7 @@ public class Parser {
             InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.WHILE_LOOP);
         ExpressionNode condition = parseCondition();
-        ScopeNode body = codeSegment();
+        List<AstNode> body = codeSegment();
 
         return new WhileNode(tokenizer.current().getStartPosition(), condition, body);
     }
@@ -182,7 +182,7 @@ public class Parser {
     private IfNode parseIf() throws NotAllowedInThisContext, OtherTokenTypeNeedHere, InvalidIdentityName {
         validateTokenType(tokenizer.current(), TokenType.IF);
         ExpressionNode condition = parseCondition();
-        ScopeNode body = codeSegment();
+        List<AstNode> body = codeSegment();
 
         return new IfNode(tokenizer.current().getStartPosition(), condition, body);
     }
