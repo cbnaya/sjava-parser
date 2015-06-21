@@ -34,6 +34,7 @@ public class AstValidator {
 
     public static void globalValidate(GlobalNode globalNode) throws VarDuplicateDeclaration,
             RequiredVarDoseNotExistException, MethodNotExistsException, TypeMisMatchException, VarNeverAssignedException, NumOfArgumentsNotMatchException, MethodMustEndWithReturnException, FinalAssignmentException {
+        getGlobalVariableStack(globalNode);
         for (MethodNode method:globalNode.getMethods())
         {
             VarStack varStack = getGlobalVariableStack(globalNode);
@@ -151,8 +152,8 @@ public class AstValidator {
     }
 
     private void validateCallMethod(CallMethodNode callMethodNode) throws NumOfArgumentsNotMatchException,
-                                                                            TypeMisMatchException,
-                                                                            MethodNotExistsException {
+            TypeMisMatchException,
+            MethodNotExistsException, RequiredVarDoseNotExistException {
         MethodNode methodNode = getMethod(callMethodNode);
 
         if (callMethodNode.getArgs().size() != methodNode.getArgs().size()) {
@@ -164,7 +165,7 @@ public class AstValidator {
 
         for (ExpressionNode argValue : callMethodNode.getArgs()) {
             ArgumentNode argumentNode = args.next();
-            if(!argumentNode.getType().accept(argValue.getType()))
+            if(!argumentNode.getType().accept(getExpressionType(argValue)))
             {
                 throw new TypeMisMatchException(argumentNode.getName(), argumentNode.getType(),
                                                             argValue.getType(),argValue.getPosition());
