@@ -1,7 +1,9 @@
 package validator;
 
+import ast.AssignmentNode;
 import ast.VarDeclarationNode;
 import ast.VarExpressionNode;
+import lexer.Position;
 
 import java.util.ArrayList;
 
@@ -48,17 +50,25 @@ public class VarStack {
         return null;
     }
 
-    public Variable get(VarExpressionNode varExpressionNode) throws RequiredVarDoseNotExistException {
-        for (int i = stack.size()-1; i>=0; i--)
-        {
-            Variable var = getFromLevel(i, varExpressionNode.getName());
-            if (null != var)
-            {
+    private Variable get(String name, Position pos) throws RequiredVarDoseNotExistException {
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            Variable var = getFromLevel(i, name);
+            if (null != var) {
                 return var;
             }
         }
 
-        throw new RequiredVarDoseNotExistException(varExpressionNode);
+        throw new RequiredVarDoseNotExistException(name, pos);
+    }
+
+
+
+    public Variable get(AssignmentNode assignmentNode) throws RequiredVarDoseNotExistException {
+        return get(assignmentNode.getName(), assignmentNode.getPosition());
+    }
+
+    public Variable get(VarExpressionNode varExpressionNode) throws RequiredVarDoseNotExistException {
+        return get(varExpressionNode.getName(), varExpressionNode.getPosition());
     }
 
 
