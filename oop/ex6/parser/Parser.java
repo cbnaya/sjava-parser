@@ -336,7 +336,7 @@ public class Parser {
             }
             result.add(new VarDeclarationNode(tok.getStartPosition(), type,varName, isFinal));
 
-            if (tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
+            if (isFinal || tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP)
             {
                    result.add(parseAssignment());
             }
