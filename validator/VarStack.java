@@ -1,5 +1,8 @@
 package validator;
 
+import ast.VarDeclarationNode;
+import ast.VarExpressionNode;
+
 import java.util.ArrayList;
 
 /**
@@ -21,13 +24,15 @@ public class VarStack {
         stack.remove(stack.size()-1);
     }
 
-    public void add(Variable var)
-    {
-        if (null != getFromLevel(stack.size()-1, var.getName()))
+    public Variable add(VarDeclarationNode varDeclarationNode) throws VarDuplicateDeclaration {
+        if (null != getFromLevel(stack.size()-1, varDeclarationNode.getName()))
         {
-            //TODO : throw
+            throw new VarDuplicateDeclaration(varDeclarationNode);
         }
+        Variable var = new Variable(varDeclarationNode.getName(), varDeclarationNode.getType(),
+                varDeclarationNode.isFinal());
         stack.get(stack.size()-1).add(var);
+        return var;
     }
 
     private Variable getFromLevel(int level, String name)
@@ -43,18 +48,17 @@ public class VarStack {
         return null;
     }
 
-    public Variable get(String name)
-    {
+    public Variable get(VarExpressionNode varExpressionNode) throws RequiredVarDoseNotExistException {
         for (int i = stack.size()-1; i>=0; i--)
         {
-            Variable var = getFromLevel(i, name);
+            Variable var = getFromLevel(i, varExpressionNode.getName());
             if (null != var)
             {
                 return var;
             }
         }
 
-        return null;
+        throw new RequiredVarDoseNotExistException(varExpressionNode);
     }
 
 
