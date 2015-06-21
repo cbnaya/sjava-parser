@@ -2,9 +2,9 @@ package ast;
 
 import lexer.Position;
 
-public class VarDeclaration extends AstNode {
+public class VarDeclarationNode extends AstNode {
 
-	public VarDeclaration(Position position, String type, String name, boolean isFinal) {
+	public VarDeclarationNode(Position position, String type, String name, boolean isFinal) {
         super(position);
         this.type = ExpressionNode.ExpressionType.valueOf(type.toUpperCase());
         this.name = name;
