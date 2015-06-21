@@ -126,6 +126,8 @@ public class Parser {
                     body.add(parseReturn());
                 }
                 break;
+                case NEW_LINE:
+                    break;
                 case CLOSE_BRACES:
                 {
                     continue;
