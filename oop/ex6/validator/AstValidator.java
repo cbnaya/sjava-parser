@@ -1,6 +1,5 @@
 package oop.ex6.validator;
 
-import ast.*;
 import oop.ex6.ast.*;
 
 import java.util.Iterator;
