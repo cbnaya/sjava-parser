@@ -41,12 +41,16 @@ BinaryOpNode.java - 	A node of boolean binary oprator, consiting two
 AndNode.java - 			"&&" binary operator.
 OrNode.java - 			"||" binary operator.
 VarDeclarationNode.java - 	Representing a declaration of a variable.
-AssignmentNode.java - 	Representing an assignment of a variable with an 
+AssignmentNode.java - 	Representing an assignment of a variable with an
 						expression.  
 CallMethodNode.java - 	A node for calling a method.
 ReturnNode.java - 		Representing a return statement.
 
-AstValidator.java - 
+AstValidator.java - 	Checks the state of the program is valid at each stage.
+VarStack.java - 		Keeps the state of the program.
+Variable.java -			VarStack element.
+MethodMustEndWithReturnException.java - Thrown if a method did not end with return.
+MethodDoesNotExistsException.java, VariableDoesNotExistException.java -
 
 =============================
 =          Design           =
