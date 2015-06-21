@@ -29,6 +29,4 @@ public abstract class ExpressionNode extends AstNode {
 
     public abstract ExpressionType getType();
 
-
-    public String value;
 }
