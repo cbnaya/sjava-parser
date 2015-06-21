@@ -12,6 +12,11 @@ public class VarExpressionNode extends ExpressionNode {
 		name = varName;
 	}
 
+    public String getName()
+    {
+        return name;
+    }
+    
     @Override
     public ExpressionType getType() {
         throw new NotImplementedException();

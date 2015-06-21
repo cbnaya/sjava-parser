@@ -2,20 +2,20 @@ package ast;
 
 import lexer.Position;
 
-public class VarDeclaration extends AstNode {
+public class VarDeclarationNode extends AstNode {
 
-	public VarDeclaration(Position position, String type, String name, boolean isFinal) {
+	public VarDeclarationNode(Position position, String type, String name, boolean isFinal) {
         super(position);
-        this.type = type;
+        this.type = ExpressionNode.ExpressionType.valueOf(type.toUpperCase());
         this.name = name;
         this.isFinal = isFinal;
     }
 
-    private String type;
+    private ExpressionNode.ExpressionType type;
     private boolean isFinal;
     private String name;
 
-    public String getType() {
+    public ExpressionNode.ExpressionType getType() {
         return type;
     }
     

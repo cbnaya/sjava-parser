@@ -15,7 +15,7 @@ public abstract class ExpressionNode extends AstNode {
         STRING,
         BOOLEAN;
 
-        boolean accept(ExpressionType expType) {
+        public boolean accept(ExpressionType expType) {
             return (this == expType) ||
                     (this == DOUBLE && expType == INT) ||
                     (this == BOOLEAN && (expType == INT || expType == DOUBLE));
@@ -29,6 +29,4 @@ public abstract class ExpressionNode extends AstNode {
 
     public abstract ExpressionType getType();
 
-
-    public String value;
 }

@@ -1,20 +1,21 @@
 package ast;
 
 import lexer.Position;
+
+import java.util.List;
+
 /**
  * Created by cbnaya on 14/06/2015.
  */
 
-public abstract class ConditionalNode extends AstNode {
+public abstract class ConditionalNode extends ScopeNode {
 
     private final ExpressionNode condition;
-    private ScopeNode body;
 
-    public ConditionalNode(Position position, ExpressionNode condition, ScopeNode body)
+    public ConditionalNode(Position position, ExpressionNode condition, List<AstNode> body)
     {
-        super(position);
+        super(position, body);
         this.condition= condition;
-        this.body = body;
     }
 
 
@@ -22,7 +23,4 @@ public abstract class ConditionalNode extends AstNode {
         return condition;
     }
 
-    public ScopeNode getBody() {
-        return body;
-    }
 }
