@@ -23,14 +23,14 @@ NotAllowedInThisContext.java - 	Thrown if a token unrelated to the context was
 InvalidIdentityName.java - 		Thrown when trying to name a method or a 
 								variable with invalid name.
 
+
 AstNode.java - 			Representing a node in an abstract syntax tree.
-GlobalNode.java - 		Representing the AST root, the global code block.
+ScopeNode.java -		A code block like global, if, while and methods.
+GlobalNode.java - 		Representing the AST root, the global code scope.
 MethodNode.java - 		A method declaration.
 ArgumentNode.java -		An argument of a method.
 ConditionalNode.java - 	An inner block, starts with a condition.
 IfNode.java, WhileNode.java - Conditional nodes. 
-ScopeNode.java -		The code body of blocks like global, if, while and 
-						methods.
 ExpressionNode.java - 	Representing an expression.
 LiteralExpressionNode.java - 	A specific value expression, like a number, 
 								true, a character, etc..
