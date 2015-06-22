@@ -11,7 +11,7 @@ public class AssignmentNode extends AstNode {
 	private final String name;
 	
     /**
-     * @param position The position in the file if the assignment.
+     * @param position The position in the file of the assignment.
      * @param name The name of the variable assigning to.
      * @param value The assigned expression.
      */

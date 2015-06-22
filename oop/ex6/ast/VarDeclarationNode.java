@@ -13,9 +13,9 @@ public class VarDeclarationNode extends AstNode {
     
     /**
      * @param position The position in the file of the variable declaration.
-     * @param type The variable's type. (e.g int, String, etc.)
+     * @param type The variable's type. (e.g "int", "String", etc.)
      * @param name The variable's name.
-     * @param isFinal Whether the variable is assignable after delaration.
+     * @param isFinal Whether the variable is assignable after declaration.
      */
 	public VarDeclarationNode(final Position position, final String type, 
 			final String name, final boolean isFinal) {
