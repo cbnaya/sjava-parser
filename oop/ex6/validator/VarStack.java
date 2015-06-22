@@ -1,11 +1,11 @@
 package oop.ex6.validator;
 
+import java.util.ArrayList;
+
 import oop.ex6.ast.AssignmentNode;
 import oop.ex6.ast.VarDeclarationNode;
 import oop.ex6.ast.VarExpressionNode;
 import oop.ex6.lexer.Position;
-
-import java.util.ArrayList;
 
 /**
  * Keeps the state of all variables for one scope at a time.

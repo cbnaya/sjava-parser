@@ -1,41 +1,75 @@
 package oop.ex6.validator;
 
-import oop.ex6.ast.*;
-import oop.ex6.ast.ExpressionNode.ExpressionType;
-
 import java.util.Iterator;
 import java.util.List;
 
+import oop.ex6.ast.ArgumentNode;
+import oop.ex6.ast.AssignmentNode;
+import oop.ex6.ast.AstNode;
+import oop.ex6.ast.BinaryOpNode;
+import oop.ex6.ast.CallMethodNode;
+import oop.ex6.ast.ConditionalNode;
+import oop.ex6.ast.ExpressionNode;
+import oop.ex6.ast.ExpressionNode.ExpressionType;
+import oop.ex6.ast.GlobalNode;
+import oop.ex6.ast.MethodNode;
+import oop.ex6.ast.ScopeNode;
+import oop.ex6.ast.VarDeclarationNode;
+import oop.ex6.ast.VarExpressionNode;
+
+/**
+ * Used for running over an AST to validate all references variables and methods
+ * are legitimate, by checking all errors which can't be found during the tree
+ * creation.
+ */
 public class AstValidator {
 
 	public static final String CONDITION_NAME = "condition";
 	private final VarStack stack;
 	private final List<MethodNode> methodList;
 
+	/**
+	 * @param stack A call stack to keep track of the state of the variable. 
+	 * @param methodList All methods that could be called.
+	 */
 	public AstValidator(final VarStack stack, final List<MethodNode> methodList)
 	{
 		this.stack = stack;
 		this.methodList = methodList;
-
 	}
 
-	public void run(final ScopeNode codeScope) throws InvalidFileException {
+	/**
+	 * Runs a scope without entering it. 
+	 * @param codeScope A scope to validate, step by step.
+	 * @throws InvalidCodeException If this scope was found invalid.
+	 */
+	public void run(final ScopeNode codeScope) throws InvalidCodeException {
 		validateCodeScope(codeScope, false);
 	}
 
-
-	public void run(final MethodNode method) throws InvalidFileException {
+	/**
+	 * @param method A method to validate, step by step.
+	 * @throws InvalidCodeException If this method was found invalid.
+	 */
+	public void run(final MethodNode method) throws InvalidCodeException {
 		validateFunction(method);
 	}
 
-	public VarStack getStack()
-	{
+	/**
+	 * @return The stack which keeps the current state of the program.
+	 */
+	public VarStack getStack() {
 		return stack;
 	}
 
+	/**
+	 * Validates all the code.
+	 * @param globalNode The root of the ast representing the code.
+	 * @throws InvalidCodeException If the code is found invalid.
+	 */
 	public static void globalValidate(final GlobalNode globalNode) 
-			throws InvalidFileException {
-		for (final MethodNode method:globalNode.getMethods()) {
+			throws InvalidCodeException {
+		for (final MethodNode method : globalNode.getMethods()) {
 			final VarStack varStack = getGlobalVariableStack(globalNode);
 			final AstValidator astValidator = new AstValidator(varStack, 
 					globalNode.getMethods());
@@ -43,8 +77,13 @@ public class AstValidator {
 		}
 	}
 
+	/**
+	 * @param globalNode An ast root.
+	 * @return A stack containing all global variables.
+	 * @throws InvalidCodeException If there is a problem at the global scope.
+	 */
 	public static VarStack getGlobalVariableStack(final GlobalNode globalNode) 
-			throws InvalidFileException {
+			throws InvalidCodeException {
 		final VarStack stack = new VarStack();
 		stack.enterScope();
 
@@ -56,7 +95,7 @@ public class AstValidator {
 	}
 
 	private void validateFunction(final MethodNode methodNode) 
-			throws InvalidFileException {
+			throws InvalidCodeException {
 		stack.enterScope();
 
 		for (final ArgumentNode arg : methodNode.getArgs()) {
@@ -74,55 +113,37 @@ public class AstValidator {
 	}
 
 	private void validateCodeScope(final ScopeNode scopeNode) 
-			throws InvalidFileException {
+			throws InvalidCodeException {
 		validateCodeScope(scopeNode, true);
 	}
 
 	private void validateCodeScope(final ScopeNode scopeNode, 
-			final boolean isDifferentNameScope) throws InvalidFileException {
+			final boolean isDifferentNameScope) throws InvalidCodeException {
 		if (isDifferentNameScope) {
 			stack.enterScope();
 		}
 
 		for (final AstNode node : scopeNode.getBody()) {
 			switch (node.getNodeType()) {
-			case VAR_DECLARATION: {
+			case VAR_DECLARATION: 
 				final VarDeclarationNode varDeclaration = 
 						(VarDeclarationNode) node;
 				stack.add(varDeclaration);
-			}
-			break;
-			case ASSIGNMENT: {
-				final AssignmentNode assignmentNode = (AssignmentNode) node;
-
-				final ExpressionNode value = assignmentNode.getValue();
-				validateExpression(value);
-				final ExpressionNode.ExpressionType valueType = 
-						getExpressionType(value);
-				final Variable var = stack.get(assignmentNode);
-
-				if ((var.isFinal()) && (var.hasValue())) {
-					throw new FinalAssignmentException(assignmentNode);
-				} if(!var.assign(valueType)) {
-					throw new TypeMismatchException(var.getName(), 
-							var.getType(), valueType, 
-							assignmentNode.getPosition());
-				}
-			}
-			break;
+				break;
+			case ASSIGNMENT:
+				validateAssignment((AssignmentNode) node);
+				break;
 
 			case WHILE:
-			case IF: {
+			case IF: 
 				final ConditionalNode conditionalNode = (ConditionalNode) node;
 				validateCondition(conditionalNode.getCondition());
 				validateCodeScope(conditionalNode);
-			}
-			break;
-			case CALL_METHOD: {
+				break;
+			case CALL_METHOD:
 				final CallMethodNode callMethodNode = (CallMethodNode) node;
 				validateCallMethod(callMethodNode);
-			}
-			break;
+				break;
 			case RETURN:
 				break;
 			}
@@ -130,6 +151,23 @@ public class AstValidator {
 
 		if (isDifferentNameScope) {
 			stack.exitScope();
+		}
+	}
+	
+	private void validateAssignment(AssignmentNode assignmentNode) 
+			throws VariableException, TypeMismatchException {
+		final ExpressionNode value = assignmentNode.getValue();
+		validateExpression(value);
+		final ExpressionNode.ExpressionType valueType = 
+				getExpressionType(value);
+		final Variable var = stack.get(assignmentNode);
+
+		if ((var.isFinal()) && (var.hasValue())) {
+			throw new FinalAssignmentException(assignmentNode);
+		} if(!var.assign(valueType)) {
+			throw new TypeMismatchException(var.getName(), 
+					var.getType(), valueType, 
+					assignmentNode.getPosition());
 		}
 	}
 
