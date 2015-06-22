@@ -4,6 +4,15 @@ package oop.ex6.lexer;
  * this class represent a location in the file
  */
 public class Position {
+    //the to string message format
+    public static final String TO_STRING_FORMAT = "line %d column %d";
+    //regex of new line of the split
+    public static final String NEW_LINE_REGEX = "\r?\n";
+
+    //save the line number
+    private final int line;
+    //save the column
+    private final int column;
 
     /**
      * Ctor
@@ -73,15 +82,4 @@ public class Position {
 
         return new Position(line, column);
     }
-
-
-    //the to string message format
-    public static final String TO_STRING_FORMAT = "line %d column %d";
-    //regex of new line of the split
-    public static final String NEW_LINE_REGEX = "\r?\n";
-
-    //save the line number
-    private int line;
-    //save the column
-    private int column;
 }

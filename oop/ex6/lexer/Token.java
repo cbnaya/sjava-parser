@@ -3,7 +3,8 @@ package oop.ex6.lexer;
 import java.util.regex.Pattern;
 
 /**
- * this class represent a token in the s-java language
+ * this class represent a token in the s-java language.
+ * for more information see the Tokenizer documentation
  */
 public class Token {
 
@@ -38,9 +39,17 @@ public class Token {
         EOF("\\z"),
         UNKNOWN(".+?");
 
+
+        //pattern of illegal chars in the group name
+        public static final String ILLEGAL_CHARS_PATTERN = "[^a-zA-Z0-9]+";
+
+        //save the pattern
+        private final String pattern;
+
         /**
          * Ctor
-         * @param pattern - the regex pattern
+         *
+         * @param pattern - the corresponding regex pattern
          */
         private TokenType(String pattern) {
             this.pattern = pattern;
@@ -48,31 +57,47 @@ public class Token {
 
         /**
          * return the pattern of the token type
+         *
          * @return the pattern of the token type
          */
-        public final String matchPattern()
-        {
+        public final String matchPattern() {
             return pattern;
         }
 
         /**
          * return legal group name
+         * necessary because regex group name is limited (e.g. underscore is illegal)
+         * this function remove all the illegal char from the name
          *
          * @return legal group name
          */
         public final String getGroupName() {
             return Pattern.compile(ILLEGAL_CHARS_PATTERN).matcher(name()).replaceAll("");
         }
+    }
 
-        //pattern of illegal chars in the group name
-        public static final String ILLEGAL_CHARS_PATTERN = "[^a-zA-Z0-9]+";
 
-        //save the pattern
-        private final String pattern;
-        }
+    //save the pattern of the toString format
+    public static final String TOKEN_STRING_PATTERN = "%s : %s  (%s - %s)";
 
-    Token(TokenType tokenType, String tokenData, Position startPosition, Position endPosition)
-    {
+    //save the token type
+    private final TokenType type;
+    //save the token data
+    private final String data;
+    //save the start position
+    private final Position startPosition;
+    //save the end position
+    private final Position endPosition;
+
+    /**
+     * Ctor
+     *
+     * @param tokenType     - the token Type
+     * @param tokenData     - the token data
+     * @param startPosition - the start position of the token
+     * @param endPosition   - the end position of the token
+     */
+    Token(TokenType tokenType, String tokenData, Position startPosition, Position endPosition) {
         type = tokenType;
         data = tokenData;
         this.startPosition = startPosition;
@@ -81,6 +106,7 @@ public class Token {
 
     /**
      * return the start position of the token
+     *
      * @return the start position of the token
      */
     public Position getStartPosition() {
@@ -89,6 +115,7 @@ public class Token {
 
     /**
      * return the end position of the token
+     *
      * @return the end position of the token
      */
     public Position getEndPosition() {
@@ -97,6 +124,7 @@ public class Token {
 
     /**
      * return the type of the token
+     *
      * @return the type of the token
      */
     public TokenType getType() {
@@ -105,6 +133,7 @@ public class Token {
 
     /**
      * return the data of the token
+     *
      * @return the data of the token
      */
     public String getData() {
@@ -114,21 +143,9 @@ public class Token {
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
-        return String.format(TO_STRING_PATTERN, type.name(), data,
-                                            startPosition.toString(), endPosition.toString());
+    public String toString() {
+        return String.format(TOKEN_STRING_PATTERN, type.name(), data,
+                startPosition.toString(), endPosition.toString());
     }
 
-    //save the pattern of the toString format
-    public static final String TO_STRING_PATTERN = "%s : %s  (%s - %s)";
-
-    //save the token type
-    private TokenType type;
-    //save the token data
-    private String data;
-    //save the start position
-    private Position startPosition;
-    //save the end position
-    private Position endPosition;
 }
