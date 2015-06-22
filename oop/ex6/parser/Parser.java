@@ -15,7 +15,7 @@ import static oop.ex6.lexer.Token.TokenType;
 public class Parser {
     public Parser(Tokenizer tokenizer)
     {
-        this.tokenizer = new ComplexItrator<Token>(tokenizer);
+        this.tokenizer = new ComplexIterator<Token>(tokenizer);
     }
 
     private void validateTokenType(Token tok, TokenType requiredType) throws OtherTokenTypeNeedHereException {
@@ -424,5 +424,5 @@ public class Parser {
                 (Pattern.matches("[^_]+.*", methodName)));
     }
     
-    private ComplexItrator<Token> tokenizer;
+    private ComplexIterator<Token> tokenizer;
 }
