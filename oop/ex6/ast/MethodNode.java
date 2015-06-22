@@ -1,33 +1,47 @@
 package oop.ex6.ast;
 
-import oop.ex6.lexer.Position;
-
 import java.util.List;
 
-public class MethodNode extends ScopeNode{
+import oop.ex6.lexer.Position;
 
-    public MethodNode(Position position, String methodName, List<ArgumentNode> methodArgs, List<AstNode>
-            methodBody) {
-        super(position, methodBody);
-        name = methodName;
-        arguments = methodArgs;
-    }
+/**
+ * A method declaration.
+ */
+public class MethodNode extends ScopeNode {
 
-    public List<ArgumentNode> getArgs() {
-        return arguments;
-    }
+	private final List<ArgumentNode> arguments;
+	private final String name;
 
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @param position The position in the file the method starts.
+	 * @param methodName The method's name.
+	 * @param methodArgs The method's arguments.
+	 * @param methodBody The method's code body.
+	 */
+	public MethodNode(final Position position, final String methodName, 
+			final List<ArgumentNode> methodArgs, final List<AstNode> methodBody)
+	{
+		super(position, methodBody);
+		name = methodName;
+		arguments = methodArgs;
+	}
 
+	/**
+	 * @return The method's arguments.
+	 */
+	public List<ArgumentNode> getArgs() {
+		return arguments;
+	}
+	
+	/**
+	 * @return The method's name.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    private final List<ArgumentNode> arguments;
-    private final String name;
-
-
-    @Override
-    public NodeType getNodeType() {
-        return NodeType.METHOD;
-    }
+	@Override
+	public NodeType getNodeType() {
+		return NodeType.METHOD;
+	}
 }

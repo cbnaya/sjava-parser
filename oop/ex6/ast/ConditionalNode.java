@@ -1,26 +1,33 @@
 package oop.ex6.ast;
 
-import oop.ex6.lexer.Position;
-
 import java.util.List;
 
-/**
- * Created by cbnaya on 14/06/2015.
- */
+import oop.ex6.lexer.Position;
 
+/**
+ * An inner code block, starts with a condition.
+ */
 public abstract class ConditionalNode extends ScopeNode {
 
-    private final ExpressionNode condition;
+	private final ExpressionNode condition;
 
-    public ConditionalNode(Position position, ExpressionNode condition, List<AstNode> body)
-    {
-        super(position, body);
-        this.condition= condition;
-    }
+	/**
+	 * @param position The position in the file this scope starts.
+	 * @param condition The condition of this scope.
+	 * @param body The nodes representing the code inside this scope.
+	 */
+	public ConditionalNode(final Position position, 
+			final ExpressionNode condition, final List<AstNode> body)
+	{
+		super(position, body);
+		this.condition = condition;
+	}
 
-
-    public ExpressionNode getCondition() {
-        return condition;
-    }
+	/**
+	 * @return The condition of this scope.
+	 */
+	public ExpressionNode getCondition() {
+		return condition;
+	}
 
 }

@@ -3,10 +3,14 @@ package oop.ex6.ast;
 import oop.ex6.lexer.Position;
 
 /**
- * Created by cbnaya on 15/06/2015.
+ * Representing a return statement.
  */
-public class ReturnNode extends AstNode{
-    public ReturnNode(Position position) {
+public class ReturnNode extends AstNode {
+	
+    /**
+     * @param position The position in the file of the statement.
+     */
+    public ReturnNode(final Position position) {
         super(position);
     }
 

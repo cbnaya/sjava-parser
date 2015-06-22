@@ -1,19 +1,30 @@
 package oop.ex6.ast;
 
-import oop.ex6.lexer.Position;
-
 import java.util.List;
 
+import oop.ex6.lexer.Position;
+
+/**
+ * Representing the AST root, the global code scope.
+ */
 public class GlobalNode extends ScopeNode {
 
-    private List<MethodNode> methods;
+    private final List<MethodNode> methods;
 	
-	public GlobalNode(List<AstNode> globalBody, List<MethodNode> globalMethods) {
+	/**
+	 * @param globalBody All global code (as opposed to code inside methods).
+	 * @param globalMethods Method declarations.
+	 */
+	public GlobalNode(final List<AstNode> globalBody, 
+			final List<MethodNode> globalMethods) 
+	{
 		super(new Position(0,0), globalBody);
-
 		methods = globalMethods;
 	}
 	
+	/**
+	 * @return The methods subtrees.
+	 */
 	public List<MethodNode> getMethods() {
 		return methods;
 	}

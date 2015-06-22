@@ -3,15 +3,23 @@ package oop.ex6.ast;
 import oop.ex6.lexer.Position;
 
 /**
- * Created by cbnaya on 14/06/2015.
+ * An argument of a method.
  */
 public class ArgumentNode extends VarDeclarationNode {
-    public ArgumentNode(Position position, String argType, String argName, boolean isFinal) {
-        super(position, argType, argName, isFinal);
-    }
 
-    @Override
-    public NodeType getNodeType() {
-        return NodeType.ARGUMENT;
-    }
+	/**
+	 * @param position The position in the file of the argument declaration.
+	 * @param argType The argument's type. (e.g int, String, etc.)
+	 * @param argName The argument's name.
+	 * @param isFinal Whether the argument is assignable.
+	 */
+	public ArgumentNode(final Position position, final String argType, 
+			final String argName, final boolean isFinal) {
+		super(position, argType, argName, isFinal);
+	}
+
+	@Override
+	public NodeType getNodeType() {
+		return NodeType.ARGUMENT;
+	}
 }
