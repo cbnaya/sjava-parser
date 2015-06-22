@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
  *
  * we implement a tokenizer based on the regex named capturing groups.
  */
-public class Tokenizer implements Iterator<Token>{
+public class Tokenizer implements Iterator<Token> {
 
+    //save the pattern of optional regex group
     public static final String REGEX_OPTION_GROUP = "|(?<%s>%s)";
+    //the error message in case that any token is not match
     public static final String NOT_MATCH_ANY_PATTERN_ERROR_MSG = "match data not match to any token pattern";
     //save the last token
     private Token lastToken;
@@ -28,10 +30,10 @@ public class Tokenizer implements Iterator<Token>{
 
     /**
      * Ctor
+     *
      * @param input - the code file content
      */
-    public Tokenizer(String input)
-    {
+    public Tokenizer(String input) {
         Pattern tokenPattern = createTokensPattern();
         tokenMatcher = tokenPattern.matcher(input);
         fileContent = input;
@@ -39,15 +41,14 @@ public class Tokenizer implements Iterator<Token>{
 
     /**
      * create a regex pattern that contain all the tokens patterns
+     *
      * @return the regex pattern that contain all the token types patterns
      */
-    private static Pattern createTokensPattern()
-    {
+    private static Pattern createTokensPattern() {
         StringBuilder tokenPatternsString = new StringBuilder();
-        for(Token.TokenType type: Token.TokenType.values())
-        {
-            tokenPatternsString.append(String.format(REGEX_OPTION_GROUP,type.getGroupName(),
-                                                                        type.matchPattern()));
+        for (Token.TokenType type : Token.TokenType.values()) {
+            tokenPatternsString.append(String.format(REGEX_OPTION_GROUP, type.getGroupName(),
+                    type.matchPattern()));
         }
 
         //in the first group the or is redundant so we start from the second char
@@ -56,19 +57,17 @@ public class Tokenizer implements Iterator<Token>{
 
     /**
      * convert a match of regex to Token object
+     *
      * @param match - the regex match object
      * @return the corresponding token object
      */
-    private Token createTokenFromMatch(Matcher match)
-    {
-        for (Token.TokenType type: Token.TokenType.values())
-        {
+    private Token createTokenFromMatch(Matcher match) {
+        for (Token.TokenType type : Token.TokenType.values()) {
             String result = match.group(type.getGroupName());
-            if (result != null)
-            {
+            if (result != null) {
                 return new Token(type, result,
-                                    Position.createFromOffset(match.start(), fileContent),
-                                    Position.createFromOffset(match.end() -1, fileContent));
+                        Position.createFromOffset(match.start(), fileContent),
+                        Position.createFromOffset(match.end() - 1, fileContent));
             }
         }
 
@@ -86,20 +85,17 @@ public class Tokenizer implements Iterator<Token>{
     /**
      * return if a token type is ignored by the iterator
      * because not all the token relevant for the later processes we ignore them in the iterator
+     *
      * @param tokenType - the type to check if ignore
      * @return if ignore a token type by the iterator
      */
-    private boolean ifIgnore(Token.TokenType tokenType)
-    {
-        switch (tokenType)
-        {
+    private boolean ifIgnore(Token.TokenType tokenType) {
+        switch (tokenType) {
             case WHITE_SPACE:
-            case COMMENT:
-            {
+            case COMMENT: {
                 return true;
             }
-            default:
-            {
+            default: {
                 return false;
             }
         }
@@ -115,8 +111,7 @@ public class Tokenizer implements Iterator<Token>{
         }
 
         lastToken = createTokenFromMatch(tokenMatcher);
-        if (ifIgnore(lastToken.getType()))
-        {
+        if (ifIgnore(lastToken.getType())) {
             return next();
         }
 
