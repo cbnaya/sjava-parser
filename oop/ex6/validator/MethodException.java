@@ -3,7 +3,7 @@ package oop.ex6.validator;
 /**
  * Is thrown when there's a problem with a method.
  */
-public abstract class MethodException extends InvalidFileException {
+public abstract class MethodException extends InvalidCodeException {
 
 	private static final long serialVersionUID = 1L;
 

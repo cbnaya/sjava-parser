@@ -3,7 +3,7 @@ package oop.ex6.validator;
 /**
  * Is thrown when there's some problem regarding a s-java file.
  */
-public abstract class InvalidFileException extends Exception {
+public abstract class InvalidCodeException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
@@ -11,7 +11,7 @@ public abstract class InvalidFileException extends Exception {
 	 * Constructs a new exception with the specified detail message.
 	 * @param message The detail message.
 	 */
-	public InvalidFileException(String message) {
+	public InvalidCodeException(String message) {
 		super(message);
 	}
 }

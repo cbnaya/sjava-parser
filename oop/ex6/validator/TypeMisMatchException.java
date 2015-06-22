@@ -5,9 +5,9 @@ import oop.ex6.lexer.Position;
 
 /**
  * Is thrown when trying to assign a variable with an expression of type it's 
- * not defined to accept.
+ * not defined to accept, or when using a String or a char at a condition.
  */
-public class TypeMismatchException extends Exception {//VariableException {
+public class TypeMismatchException extends InvalidCodeException {
 
 	private static final long serialVersionUID = 1L;
 	private static final String ERROR_MESSAGE_FORMAT = 

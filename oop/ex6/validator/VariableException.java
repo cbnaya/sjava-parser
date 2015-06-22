@@ -3,7 +3,7 @@ package oop.ex6.validator;
 /**
  * Is thrown when there's a problem with a variable.
  */
-public abstract class VariableException extends InvalidFileException {
+public abstract class VariableException extends InvalidCodeException {
 
 	private static final long serialVersionUID = 1L;
 	
