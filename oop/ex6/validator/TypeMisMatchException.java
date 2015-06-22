@@ -1,17 +1,28 @@
 package oop.ex6.validator;
 
-import oop.ex6.ast.ExpressionNode;
+import oop.ex6.ast.ExpressionNode.ExpressionType;
 import oop.ex6.lexer.Position;
 
 /**
- * Created by cbnaya on 21/06/2015.
+ * Is thrown when trying to assign a variable with an expression of type it's 
+ * not defined to accept.
  */
-public class TypeMisMatchException extends Exception {
+public class TypeMismatchException extends Exception {//VariableException {
 
-    public static final String ERROR_MESSAGE_FORMAT = "%s type mismatch type %s does not accept type %s (%s)";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_MESSAGE_FORMAT = 
+			"%s type mismatch - type %s does not accept type %s (%s)";
 
-    public TypeMisMatchException(String name, ExpressionNode.ExpressionType requiredType,
-                                 ExpressionNode.ExpressionType acrualType, Position position) {
-        super(String.format(ERROR_MESSAGE_FORMAT, name, requiredType.name(), acrualType.name(), position));
-    }
+	/**
+	 * @param name The name of the variable trying assign to.
+	 * @param requiredType This variable's type.
+	 * @param actualType The type of the assigned expression.
+	 * @param position The position in the file of the assignment.
+	 */
+	public TypeMismatchException(final String name, 
+			final ExpressionType requiredType, final ExpressionType actualType, 
+			final Position position) {
+		super(String.format(ERROR_MESSAGE_FORMAT, name, requiredType.name(), 
+				actualType.name(), position));
+	}
 }

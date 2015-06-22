@@ -50,7 +50,7 @@ public class VarStack {
         return null;
     }
 
-    private Variable get(String name, Position pos) throws RequiredVarDoseNotExistException {
+    private Variable get(String name, Position pos) throws VarDoesNotExistException {
         for (int i = stack.size() - 1; i >= 0; i--) {
             Variable var = getFromLevel(i, name);
             if (null != var) {
@@ -58,19 +58,18 @@ public class VarStack {
             }
         }
 
-        throw new RequiredVarDoseNotExistException(name, pos);
+        throw new VarDoesNotExistException(name, pos);
     }
 
 
 
-    public Variable get(AssignmentNode assignmentNode) throws RequiredVarDoseNotExistException {
+    public Variable get(AssignmentNode assignmentNode) throws VarDoesNotExistException {
         return get(assignmentNode.getName(), assignmentNode.getPosition());
     }
 
-    public Variable get(VarExpressionNode varExpressionNode) throws RequiredVarDoseNotExistException {
+    public Variable get(VarExpressionNode varExpressionNode) throws VarDoesNotExistException {
         return get(varExpressionNode.getName(), varExpressionNode.getPosition());
     }
-
 
     ArrayList<ArrayList<Variable>> stack;
 }

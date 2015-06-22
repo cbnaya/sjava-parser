@@ -3,12 +3,20 @@ package oop.ex6.validator;
 import oop.ex6.ast.VarDeclarationNode;
 
 /**
- * Created by cbnaya on 21/06/2015.
+ * Is thrown when trying to declare a variable with an occupied name.
  */
-public class VarDuplicateDeclaration extends Exception {
-    public static final String ERROR_MESSAGE_FORMAT = "variable name %s already declared (%s)";
+public class VarDuplicateDeclaration extends VariableException {
 
-    public VarDuplicateDeclaration(VarDeclarationNode varDeclarationNode) {
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_MESSAGE_FORMAT = 
+    		"variable name %s was declared already (%s)";
+
+    /**
+     * @param varDeclarationNode The node representing the problematic 
+     * declaration.
+     */
+    public VarDuplicateDeclaration(final VarDeclarationNode varDeclarationNode)
+    {
         super(String.format(ERROR_MESSAGE_FORMAT, varDeclarationNode.getName(),
                 varDeclarationNode.getPosition().toString()));
     }

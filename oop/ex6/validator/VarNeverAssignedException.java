@@ -3,14 +3,21 @@ package oop.ex6.validator;
 import oop.ex6.ast.VarExpressionNode;
 
 /**
- * Created by cbnaya on 21/06/2015.
+ * Is thrown when trying to use a value of a variable without initialization.
  */
-public class VarNeverAssignedException extends Exception {
+public class VarNeverAssignedException extends VariableException {
 
-    public static final String ERROR_MESSAGE_FORMAT = "var never assigned before %s %s";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_MESSAGE_FORMAT =
+			"the variable %s was never assigned before %s";
 
-    public VarNeverAssignedException(VarExpressionNode varExpressionNode) {
-        super(String.format(ERROR_MESSAGE_FORMAT, varExpressionNode.getName(),
-                                                    varExpressionNode.getPosition().toString()));
-    }
+	/**
+	 * @param varExpressionNode The expression node containing the referenced
+	 * variable.
+	 */
+	public VarNeverAssignedException(final VarExpressionNode varExpressionNode) 
+	{
+		super(String.format(ERROR_MESSAGE_FORMAT, varExpressionNode.getName(),
+				varExpressionNode.getPosition().toString()));
+	}
 }
