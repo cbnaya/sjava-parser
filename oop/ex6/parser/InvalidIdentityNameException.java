@@ -7,7 +7,7 @@ import oop.ex6.lexer.Token;
  */
 public class InvalidIdentityNameException extends Exception {
     public InvalidIdentityNameException(Token tok) {
-        super(String.format("error (%s) invalid var name: %s ",
+        super(String.format("error (%s) invalid identity name: %s ",
                 tok.getStartPosition().toString(),tok.getData()));
     }
 }

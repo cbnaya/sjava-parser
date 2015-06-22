@@ -78,7 +78,7 @@ public class Parser {
         validateTokenType(tok, TokenType.IDENTITY);
 
         String methodName = tok.getData();
-        if (!isValidIdentityName(methodName))
+        if (!isFunctionValidIdentityName(methodName))
         {
             throw new InvalidIdentityNameException(tok);
         }
@@ -87,7 +87,6 @@ public class Parser {
         List<AstNode> body = codeSegment();
         return new MethodNode(tok.getStartPosition(), methodName,args, body);
     }
-
 
     private List<AstNode> codeSegment() throws NotAllowedInThisContextException,
             OtherTokenTypeNeedHereException, InvalidIdentityNameException {
@@ -417,6 +416,12 @@ public class Parser {
     	return (Pattern.matches("\\w+", identity))&&
                 (!identity.equals("_")) &&
                 (!Pattern.matches("\\d+\\w+", identity));
+    }
+
+
+    private boolean isFunctionValidIdentityName(String methodName) {
+        return (isValidIdentityName(methodName)&&
+                (Pattern.matches("[^_]+.*", methodName)));
     }
     
     private ComplexItrator<Token> tokenizer;
