@@ -157,7 +157,7 @@ public class AstValidator {
 				getExpressionType(value);
 		final Variable var = stack.get(assignmentNode);
 
-		if (var.isFinal()) {
+		if ((var.isFinal()) && (var.hasValue())){
 			throw new FinalAssignmentException(assignmentNode);
 		} if(!var.assign(valueType)) {
 			throw new TypeMismatchException(var.getName(), 
