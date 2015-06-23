@@ -5,7 +5,7 @@ geller
 =============================
 =      Files description    =
 =============================
-Sjavac.java - 	The main class, which all the others, and validates whether a 
+Sjavac.java - 	The main class, which calls the others, and validates whether a 
 				s-java file is alright.
 
 Token.java - 		Representing a token in the s-java language.
@@ -68,23 +68,23 @@ VarDuplicateException.java, VarNeverAssignedException.java -
 =============================
 --------- our design ---------
 Our design suggests several steps for validating a s-java file:
-1.  lexer - The first part of the code analysis is the Lexical analysis. In this
+1.  lexer - The first part of the code analysis is the lexical analysis. In this
     process we convert the code to sequence of tokens, i.e. meaningful strings. 
     Each token is atom in the language syntax e.g. the key word "if", open 
     parentheses, identity, new line and so on. For each token we save the 
     string, the type, and the position. This way, we convert a file to sequence 
-    of tokens. in case we want to extends the language in this part we need only 
+    of tokens. In case we want to extend the language in this part we need only 
     add token types, by adding corresponding regex patterns.
 2.  parser - The second part of the code analysis is to build an AST (Abstract 
 	Syntax Tree) from the sequence of tokens. AST is a bijective tree 
 	representation of the abstract syntactic structure of source code. Each code 
-	could have only one way to be interpreted as a tree and vice versa. If the 
+	could have only one way to be interpreted as a tree and vice versa. If 
 	building the AST is a success, it is ensured that the code syntax structure 
 	is valid, i.e. while statements, all the brackets and so on are OK. It is 
 	not enough to ensure that the code is OK, since types, duplicate declaration 
 	and other problems involving names references are not checked yet.
-3.  validator - The last part of the analysis is "running the code" and check it 
-	is OK. We are going over the AST, in a manner that represents running the 
+3.  validator - The last part of the analysis is "running the code" and checks 
+	it is OK. We are going over the AST, in a manner that represents running the
 	code, and keeping the variables, their state - initialized or not - and the 
 	scope of their declaration. This way we validate the tree, and if no 
 	exception was thrown during the process, it means the whole code is valid.
@@ -99,7 +99,7 @@ tree and validating it back and forth. However, the need to allow a method to
 call predefined methods and global variables made us to think of way of parsing 
 the code as it is, and then access it again easily enough.
 We had a dilemma regarding checking the AST by the nodes themselves, but decided 
-to do it externally, to keep the modularity between the syntax and and the run, 
+to do it externally, to keep the modularity between the syntax and the run, 
 which also lets us to keep the state as a VarStack field of AstValidator and not 
 passing it as a parameter each recursive call inside a node.
 
@@ -142,11 +142,11 @@ similar abstract UnaryOpNode with one expression child, adding the operators
 names and patterns to the correct enums, making the parser check them at every 
 creation of an expression and making the validator to make sure the operators
 arguments are of the right types, according to the operator rule.
-Forcing precedence require even more complicated parsing, to determine how nodes
-of different operators are nested. For example, "1+2*3" will create multiply
-node with int literal and addition-op nodes as children, and the "+" will have
-two literal expressions as children. An int field for this types of op-nodes
-will be needed.
+Forcing precedence requires even more complicated parsing, to determine how 
+nodes of different operators are nested. For example, "1+2*3" will create 
+multiply node with int literal and addition-op nodes as children, and the "+" 
+will have two literal expressions as children. An int field for this types of 
+op-nodes will be needed.
 
 =============================
 =  Implementation details   =
@@ -163,7 +163,7 @@ and the general assume the order of method declarations is not considered.
 
 Except for the "\\w" pattern we used for identity names (variables and methods),
 we have no "main regular expressions". Our implementation of the lexer made it 
-easier not to use a lot of regex, and instead read each word as a token from the 
-predefined list, so we only have to check which token it was at the parser at a
-switch-case block, and it is possible for each token to appear in only a few
-parsing methods.
+easier not to use a lot of regex, and read each word as a token from the 
+predefined list instead , so we only have to check which token it was at the 
+parser at a switch-case block, and it is possible for each token to appear in 
+only a few parsing methods.
