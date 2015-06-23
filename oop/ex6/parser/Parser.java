@@ -73,26 +73,15 @@ public class Parser {
     }
 
     /**
-<<<<<<< HEAD
-     * validate that this is ond of statement
-     * this function have to be called when the current token is END_OF_STATEMENT
-=======
      * validate that this is end of statement
      * this function have to be called when the next token is END_OF_STATEMENT
->>>>>>> origin/LastFinishes
      * after the function the iterator will point on the new line
      *
      * @throws OtherTokenTypeExpectedHereException If the next tokens is not 
      * END_OF_STATEMENT or NEW_LINE.
      */
-<<<<<<< HEAD
     private void validEndOfStatement() throws OtherTokenTypeExpectedHereException {
         validateTokenType(tokenizer.current(), TokenType.END_OF_STATEMENT);
-=======
-    private void validEndOfStatement() 
-    		throws OtherTokenTypeExpectedHereException {
-        validateNextTokenIs(TokenType.END_OF_STATEMENT);
->>>>>>> origin/LastFinishes
         validateNextTokenIs(TokenType.NEW_LINE);
     }
 
