@@ -29,7 +29,7 @@ public class Parser {
     public static final String VALID_IDENTITY_CHARS_REGEX_PATTERN = "\\w+";
     public static final String UNDERSCORE_STRING = "_";
     public static final String START_WITH_NUMBER_REGEX_PATTERN = "\\d+\\w+";
-    public static final String START_WITH_UNDERSCORE_REGEX_PATTERN = "[^_]+.*";
+    public static final String DIDNT_START_WITH_UNDERSCORE_REGEX_PATTERN = "[^_]+.*";
 
     //save the tokenizer
     private ComplexIterator<Token> tokenizer;
@@ -74,7 +74,7 @@ public class Parser {
 
     /**
      * validate that this is end of statement
-     * this function have to be called when the next token is END_OF_STATEMENT
+     * this function have to be called when the current token is END_OF_STATEMENT
      * after the function the iterator will point on the new line
      *
      * @throws OtherTokenTypeExpectedHereException If the next tokens is not
@@ -112,8 +112,8 @@ public class Parser {
                 break;
                 case IDENTITY: {
                     /*
-                     * The global call method is not allowed, so it must be an
-                     * assignment
+                     * In the global scope call method is not allowed,
+                     * so it must be an assignment
                      */
                     body.add(parseAssignment());
                     tokenizer.next();
@@ -141,11 +141,9 @@ public class Parser {
      * @throws ParsingFailedException If the parsing failed
      */
     private MethodNode parseFunctionDeclaration() throws ParsingFailedException {
-        validateTokenType(tokenizer.current(),
-                Token.TokenType.FUNCTION_DECLARE);
+        validateTokenType(tokenizer.current(), Token.TokenType.FUNCTION_DECLARE);
 
-        Position functionDeclarationPosition =
-                tokenizer.current().getStartPosition();
+        Position functionDeclarationPosition = tokenizer.current().getStartPosition();
 
         Token tok = tokenizer.next();
         validateTokenType(tok, TokenType.IDENTITY);
@@ -157,8 +155,7 @@ public class Parser {
 
         List<ArgumentNode> args = parseDecelerationArgs();
         List<AstNode> body = codeSegment();
-        return new MethodNode(functionDeclarationPosition, methodName, args,
-                body);
+        return new MethodNode(functionDeclarationPosition, methodName, args, body);
     }
 
     /**
@@ -393,13 +390,11 @@ public class Parser {
         while (tok.getType() != TokenType.CLOSE_PARENTHESES) {
             switch (tok.getType()) {
                 case OR_OP: {
-                    condition = new OrNode(tok.getStartPosition(), condition,
-                            parseSingleCondition());
+                    condition = new OrNode(tok.getStartPosition(), condition, parseSingleCondition());
                 }
                 break;
                 case AND_OP: {
-                    condition = new AndNode(tok.getStartPosition(), condition,
-                            parseSingleCondition());
+                    condition = new AndNode(tok.getStartPosition(), condition, parseSingleCondition());
                 }
                 break;
                 default: {
@@ -444,8 +439,7 @@ public class Parser {
                 throw new InvalidIdentityNameException(tok);
             }
 
-            args.add(new ArgumentNode(tok.getStartPosition(), type,
-                    tok.getData(), isFinal));
+            args.add(new ArgumentNode(tok.getStartPosition(), type, tok.getData(), isFinal));
 
             tok = tokenizer.next();
         } while (tok.getType() == TokenType.COMMA);
@@ -481,11 +475,9 @@ public class Parser {
             if (!isValidIdentityName(varName)) {
                 throw new InvalidIdentityNameException(tok);
             }
-            result.add(new VarDeclarationNode(tok.getStartPosition(), type,
-                    varName, isFinal));
+            result.add(new VarDeclarationNode(tok.getStartPosition(), type, varName, isFinal));
 
-            if (isFinal ||
-                    tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP) {
+            if (isFinal || tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP) {
                 result.add(parseAssignment());
             }
 
@@ -609,7 +601,7 @@ public class Parser {
 
     private boolean isValidFunctionName(String methodName) {
         return (isValidIdentityName(methodName) &&
-                (Pattern.matches(START_WITH_UNDERSCORE_REGEX_PATTERN,
+                (Pattern.matches(DIDNT_START_WITH_UNDERSCORE_REGEX_PATTERN,
                         methodName)));
     }
 

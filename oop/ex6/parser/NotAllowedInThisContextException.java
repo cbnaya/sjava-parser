@@ -8,7 +8,6 @@ import oop.ex6.lexer.Token;
  */
 public class NotAllowedInThisContextException extends ParsingFailedException {
 
-    private static final long serialVersionUID = 1L;
     public static final String ERROR_MESSAGE_FORMAT =
             "token of type %s (%s) not allowed in this context (%s) ";
 
@@ -19,6 +18,6 @@ public class NotAllowedInThisContextException extends ParsingFailedException {
      */
     public NotAllowedInThisContextException(Token tok) {
         super(String.format(ERROR_MESSAGE_FORMAT, tok.getType().name(),
-                tok.getData(), tok.getStartPosition().toString()));
+                                        tok.getData(), tok.getStartPosition().toString()));
     }
 }

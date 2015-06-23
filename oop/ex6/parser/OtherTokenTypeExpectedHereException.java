@@ -8,9 +8,7 @@ import oop.ex6.lexer.Token;
  */
 public class OtherTokenTypeExpectedHereException extends ParsingFailedException {
 
-    private static final long serialVersionUID = 1L;
-    public static final String ERROR_MESSAGE_FORMAT =
-            "%s need here instead of %s(%s) (%s)";
+    public static final String ERROR_MESSAGE_FORMAT = "%s need here instead of %s(%s) (%s)";
 
     /**
      * Ctor
@@ -19,8 +17,9 @@ public class OtherTokenTypeExpectedHereException extends ParsingFailedException 
      * @param type - the required token type
      */
     public OtherTokenTypeExpectedHereException(Token tok, Token.TokenType type) {
-        super(String.format(ERROR_MESSAGE_FORMAT, type.name(),
-                tok.getType().name(), tok.getData(),
-                tok.getStartPosition().toString()));
+        super(String.format(ERROR_MESSAGE_FORMAT,   type.name(),
+                                                    tok.getType().name(),
+                                                    tok.getData(),
+                                                    tok.getStartPosition().toString()));
     }
 }

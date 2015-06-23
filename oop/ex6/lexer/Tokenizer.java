@@ -22,6 +22,8 @@ public class Tokenizer implements Iterator<Token> {
     //the error message in case that any token is not match
     public static final String NOT_MATCH_ANY_PATTERN_ERROR_MSG =
             "match data does not match to any token pattern";
+    //the offset of the second char in the string
+    public static final int SECOND_CHAR_OFFSET = 1;
     //save the last token
     private Token lastToken;
     //the regex object of the match
@@ -49,11 +51,11 @@ public class Tokenizer implements Iterator<Token> {
         StringBuilder tokenPatternsString = new StringBuilder();
         for (Token.TokenType type : Token.TokenType.values()) {
             tokenPatternsString.append(String.format(REGEX_OPTION_GROUP,
-                    type.getGroupName(), type.matchPattern()));
+                                                            type.getGroupName(), type.matchPattern()));
         }
 
         //in the first group the or is redundant so we start from the second char
-        return Pattern.compile(tokenPatternsString.substring(1));
+        return Pattern.compile(tokenPatternsString.substring(SECOND_CHAR_OFFSET));
     }
 
     /**
@@ -80,8 +82,7 @@ public class Tokenizer implements Iterator<Token> {
      */
     @Override
     public boolean hasNext() {
-        return (null == lastToken) ||
-                (lastToken.getType() != Token.TokenType.EOF);
+        return (null == lastToken) || (lastToken.getType() != Token.TokenType.EOF);
     }
 
     /**

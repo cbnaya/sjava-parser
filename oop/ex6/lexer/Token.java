@@ -42,6 +42,8 @@ public class Token {
 
         //pattern of illegal chars in the group name
         public static final String ILLEGAL_CHARS_PATTERN = "[^a-zA-Z0-9]+";
+        //an empty string
+        public static final String EMPTY_STRING = "";
 
         //save the pattern
         private final String pattern;
@@ -71,8 +73,7 @@ public class Token {
          * @return legal group name
          */
         public final String getGroupName() {
-            return Pattern.compile(ILLEGAL_CHARS_PATTERN).matcher(name()).
-                    replaceAll("");
+            return Pattern.compile(ILLEGAL_CHARS_PATTERN).matcher(name()).replaceAll(EMPTY_STRING);
         }
     }
 

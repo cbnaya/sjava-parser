@@ -6,9 +6,7 @@ package oop.ex6.parser;
  * parsing exceptions.
  */
 public class ParsingFailedException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
+    
     /**
      * Ctor
      *

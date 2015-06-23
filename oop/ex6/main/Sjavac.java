@@ -23,6 +23,8 @@ public class Sjavac {
     public static final String CODE_IS_NOT_LEGAL_MESSAGE = "1";
     //message in case of io error
     public static final String IO_ERROR_MESSAGE = "2";
+    //the index of the file path in the command line argument array
+    public static final int FILE_PATH_ARGUMENT_INDEX = 0;
 
     /**
      * the entry point
@@ -34,7 +36,7 @@ public class Sjavac {
      */
     public static void main(String[] args) {
         try {
-            String fileData = readFile(args[0]);
+            String fileData = readFile(args[FILE_PATH_ARGUMENT_INDEX]);
 
             Parser astParser = new Parser(new Tokenizer(fileData));
 
@@ -60,7 +62,6 @@ public class Sjavac {
     }
 
     private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(path)),
-                StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }
 }
