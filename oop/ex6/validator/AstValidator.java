@@ -1,21 +1,10 @@
 package oop.ex6.validator;
 
+import oop.ex6.ast.*;
+import oop.ex6.ast.ExpressionNode.ExpressionType;
+
 import java.util.Iterator;
 import java.util.List;
-
-import oop.ex6.ast.ArgumentNode;
-import oop.ex6.ast.AssignmentNode;
-import oop.ex6.ast.AstNode;
-import oop.ex6.ast.BinaryOpNode;
-import oop.ex6.ast.CallMethodNode;
-import oop.ex6.ast.ConditionalNode;
-import oop.ex6.ast.ExpressionNode;
-import oop.ex6.ast.ExpressionNode.ExpressionType;
-import oop.ex6.ast.GlobalNode;
-import oop.ex6.ast.MethodNode;
-import oop.ex6.ast.ScopeNode;
-import oop.ex6.ast.VarDeclarationNode;
-import oop.ex6.ast.VarExpressionNode;
 
 /**
  * Used for running over an AST to validate all references variables and methods
@@ -69,6 +58,7 @@ public class AstValidator {
 	 */
 	public static void globalValidate(final GlobalNode globalNode) 
 			throws InvalidCodeException {
+        getGlobalVariableStack(globalNode);
 		for (final MethodNode method : globalNode.getMethods()) {
 			final VarStack varStack = getGlobalVariableStack(globalNode);
 			final AstValidator astValidator = new AstValidator(varStack, 
@@ -162,7 +152,7 @@ public class AstValidator {
 				getExpressionType(value);
 		final Variable var = stack.get(assignmentNode);
 
-		if ((var.isFinal()) && (var.hasValue())) {
+		if (var.isFinal()) {
 			throw new FinalAssignmentException(assignmentNode);
 		} if(!var.assign(valueType)) {
 			throw new TypeMismatchException(var.getName(), 
@@ -183,8 +173,8 @@ public class AstValidator {
 		}
 	}
 
-	private void validateCallMethod(final CallMethodNode callMethodNode) 
-			throws MethodException, TypeMismatchException {
+	private void validateCallMethod(final CallMethodNode callMethodNode)
+            throws MethodException, TypeMismatchException, VarDoesNotExistException {
 		final MethodNode methodNode = getMethod(callMethodNode);
 
 		if (callMethodNode.getArgs().size() != methodNode.getArgs().size()) {
@@ -196,9 +186,9 @@ public class AstValidator {
 
 		for (final ExpressionNode argValue : callMethodNode.getArgs()) {
 			final ArgumentNode argumentNode = args.next();
-			if(!argumentNode.getType().accept(argValue.getType())) {
+			if(!argumentNode.getType().accept(getExpressionType(argValue))) {
 				throw new TypeMismatchException(argumentNode.getName(), 
-						argumentNode.getType(), argValue.getType(), 
+						argumentNode.getType(), getExpressionType(argValue),
 						argValue.getPosition());
 			}
 		}

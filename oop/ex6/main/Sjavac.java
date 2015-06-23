@@ -11,49 +11,53 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Created by cbnaya on 21/06/2015.
+ * the class that contain the entry point
  */
 public class Sjavac {
 
+    //message in case of legal code
+    public static final String CODE_IS_LEGAL_MESSAGE = "0";
+    //message in case of illegal code
+    public static final String CODE_IS_NOT_LEGAL_MESSAGE = "1";
+    //message in case of io error
     public static final String IO_ERROR_MESSAGE = "2";
 
-    public static void main(String[] args)
-    {
-        try
-        {
+    /**
+     * the entry point
+     * get a sjava file path and check if the code is valid.
+     * if the code is invalid will print message that describe the problem
+     * expect to path in the first command line argument
+     *
+     * @param args - command line arguments
+     */
+    public static void main(String[] args) {
+        try {
             String fileData = readFile(args[0]);
 
-            Parser p = new Parser(new Tokenizer(fileData));
+            Parser astParser = new Parser(new Tokenizer(fileData));
 
-            GlobalNode globalNode = p.parseGlobal();
+            GlobalNode astGlobalNode = astParser.parseGlobal();
 
-            AstValidator.globalValidate(globalNode);
+            AstValidator.globalValidate(astGlobalNode);
 
-            print("0");
-        }
-        catch (IOException e)
-        {
+            print(CODE_IS_LEGAL_MESSAGE);
+        } catch (IOException e) {
             print(IO_ERROR_MESSAGE);
-            return;
-        }
-        catch (Exception e)
-        {
-            print("1");
+        } catch (Exception e) {
+            print(CODE_IS_NOT_LEGAL_MESSAGE);
             printError(e.getMessage());
-            return;
         }
     }
 
-    private static void print(String msg){
+    private static void print(String msg) {
         System.out.println(msg);
     }
-    private static void printError(String msg)
-    {
+
+    private static void printError(String msg) {
         System.err.println(msg);
     }
 
     private static String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
-
     }
 }

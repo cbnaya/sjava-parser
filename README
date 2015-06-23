@@ -83,7 +83,14 @@ to do it externally, to keep the modularity between ... , which also lets us to
 keep the state as field of the validator and not passing it as a parameter each 
 recursive call inside a node.
 
-To add new variable types, we need to add new types of enums - at the regex 
+To add new variable types, we have to :
+1. 	update the lexer to recognize the new type as var type instead of identity.
+2.	if the new type have a corresponding literal data:
+	a.	add new token type (with corresponding regex) to the lexer. 
+	b.	update the isLiteralData parser function to recognize this token as literal data. 
+3.	add the new type to thw ExpressionType enum of the ast nodes.
+
+we new types of enums - at the regex 
 patterns and at the expression types. For example, float numbers will require 
 us to add 2 patterns - "float\\b" and ""-?\\d+\\.\\d+f", and the expression 
 type "FLOAT". In addition, we should also update the 
