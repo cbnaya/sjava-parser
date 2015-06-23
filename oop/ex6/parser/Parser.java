@@ -29,6 +29,7 @@ public class Parser {
     public static final String UNDERSCORE_STRING = "_";
     public static final String START_WITH_NUMBER_REGEX_PATTERN = "\\d+\\w+";
     public static final String START_WITH_UNDERSCORE_REGEX_PATTERN = "[^_]+.*";
+
     //save the tokenizer
     private ComplexIterator<Token> tokenizer;
 
@@ -68,13 +69,13 @@ public class Parser {
 
     /**
      * validate that this is ond of statement
-     * this function have to be called when the next token is END_OF_STATEMENT
+     * this function have to be called when the current token is END_OF_STATEMENT
      * after the function the iterator will point on the new line
      *
      * @throws OtherTokenTypeExpectedHereException - if the next tokens is not END_OF_STATEMENT and NEW_LINE
      */
     private void validEndOfStatement() throws OtherTokenTypeExpectedHereException {
-        validateNextTokenIs(TokenType.END_OF_STATEMENT);
+        validateTokenType(tokenizer.current(), TokenType.END_OF_STATEMENT);
         validateNextTokenIs(TokenType.NEW_LINE);
     }
 
@@ -104,6 +105,7 @@ public class Parser {
                 case IDENTITY: {
                     //if the global call method is not allowed so it must be assignment
                     body.add(parseAssignment());
+                    tokenizer.next();
                     validEndOfStatement();
                 }
                 break;
@@ -209,7 +211,7 @@ public class Parser {
     private ReturnNode parseReturn() throws OtherTokenTypeExpectedHereException {
         validateTokenType(tokenizer.current(), TokenType.RETURN_OP);
         Position returnPosition = tokenizer.current().getStartPosition();
-
+        tokenizer.next();
         validEndOfStatement();
 
         return new ReturnNode(returnPosition);
@@ -294,6 +296,7 @@ public class Parser {
 
         String methodName = tokenizer.current().getData();
         List<ExpressionNode> args = parseCallArguments();
+        tokenizer.next();
         validEndOfStatement();
 
         return new CallMethodNode(callMethodPosition, methodName, args);
@@ -465,7 +468,7 @@ public class Parser {
     /**
      * parse assignment
      * this function have to call when the current token is IDENTITY
-     * after this function the iterator will point on value token
+     * after this function the iterator will point on the value token
      *
      * @return AssignmentNode - an AST node that represent assignment
      * @throws ParsingFailedException - if the parse failed
@@ -477,7 +480,6 @@ public class Parser {
         validateNextTokenIs(TokenType.ASSIGNMENT_OP);
 
         Token valueTok = tokenizer.next();
-
 
         ExpressionNode valueExpr = convertValueTokenToExpression(valueTok);
 
