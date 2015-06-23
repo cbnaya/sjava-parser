@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * the class that contain the entry point
+ * the class that contains the entry point
  */
 public class Sjavac {
 
@@ -30,7 +30,7 @@ public class Sjavac {
      * if the code is invalid will print message that describe the problem
      * expect to path in the first command line argument
      *
-     * @param args - command line arguments
+     * @param args Command line arguments
      */
     public static void main(String[] args) {
         try {
@@ -60,6 +60,7 @@ public class Sjavac {
     }
 
     private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get(path)), 
+        		StandardCharsets.UTF_8);
     }
 }
