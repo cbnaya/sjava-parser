@@ -13,11 +13,14 @@ public class ArgumentNode extends VarDeclarationNode {
 	 * @param argName The argument's name.
 	 * @param isFinal Whether the argument is assignable.
 	 */
-	public ArgumentNode(final Position position, final String argType, 
-			final String argName, final boolean isFinal) {
+	public ArgumentNode(Position position, String argType, String argName, 
+			boolean isFinal) {
 		super(position, argType, argName, isFinal);
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.VarDeclarationNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.ARGUMENT;

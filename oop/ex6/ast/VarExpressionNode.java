@@ -14,7 +14,7 @@ public class VarExpressionNode extends ExpressionNode {
 	 * @param position The position in the file the variable is mentioned.
 	 * @param varName The name of the mentioned variable.
 	 */
-	public VarExpressionNode(final Position position, final String varName) {
+	public VarExpressionNode(Position position, String varName) {
 		super(position);
 		name = varName;
 	}
@@ -26,11 +26,17 @@ public class VarExpressionNode extends ExpressionNode {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.VAR_VAL;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.ExpressionNode#getType()
+	 */
 	@Override
 	public ExpressionType getType() {
 		throw new UnsupportedOperationException();

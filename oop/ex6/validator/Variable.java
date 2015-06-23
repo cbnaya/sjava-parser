@@ -17,8 +17,8 @@ public class Variable {
 	 * @param type The variable's type.
 	 * @param isFinal Whether the variable is assignable after declaration.
 	 */
-	public Variable(final String name, final ExpressionType type, 
-			final boolean isFinal) {
+	public Variable(String name, ExpressionType type, 
+			boolean isFinal) {
 		this.name = name;
 		this.type = type;
 		this.isFinal = isFinal;
@@ -31,7 +31,7 @@ public class Variable {
 	 * @param valueType The type of the assigned expression.
 	 * @return Whether the assign succeeded.
 	 */
-	public boolean assign(final ExpressionType valueType) {
+	public boolean assign(ExpressionType valueType) {
         if (type.accept(valueType) && !(hasValue && isFinal)) {
             hasValue = true;
             return true;

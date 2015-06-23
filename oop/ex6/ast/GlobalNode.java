@@ -9,14 +9,14 @@ import oop.ex6.lexer.Position;
  */
 public class GlobalNode extends ScopeNode {
 
+	// All methods declarations.
     private final List<MethodNode> methods;
 	
 	/**
 	 * @param globalBody All global code (as opposed to code inside methods).
 	 * @param globalMethods Method declarations.
 	 */
-	public GlobalNode(final List<AstNode> globalBody, 
-			final List<MethodNode> globalMethods) 
+	public GlobalNode(List<AstNode> globalBody, List<MethodNode> globalMethods)
 	{
 		super(new Position(0,0), globalBody);
 		methods = globalMethods;
@@ -29,6 +29,9 @@ public class GlobalNode extends ScopeNode {
 		return methods;
 	}
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.ScopeNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.GLOBAL;

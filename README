@@ -66,39 +66,45 @@ VarDuplicateException.java, VarNeverAssignedException.java -
 =============================
 =          Design           =
 =============================
-Our design suggests several steps for validating a s-java file.
-The first part of the code analysis is the Lexical analysis. In this process we 
-convert the code to sequence of tokens, i.e. meaningful strings. Each token is 
-atom in the language syntax e.g. the key word "if", open parentheses, identity, 
-new line and so on. For each token we save the string, the type, and the 
-position. This way, we could split a file into the different tokens, and might 
-easily add new words and types, by adding some new regex patterns. 
-The second part of the code analysis is to build an AST (Abstract Syntax Tree) 
-from the sequence of tokens. AST is a bijective tree representation of the 
-abstract syntactic structure of source code. Each code could have only one way 
-to be interpreted as a tree and vice versa. If the building the AST is a 
-success, it is ensured that the code syntax structure is valid, i.e. while 
-statements, all the brackets and so on are OK.
-it is not enough to ensure that the code is OK, since types, duplicate 
-declaration and other problems involving names references are not checked yet, 
-and here comes the validator. The last part of the analysis is going over the 
-AST, in a manner that represents running the code, and keeping the variables,
-their state - initialized or not - and the scope of their declaration. This way 
-we validate the tree, and if no exception was thrown during the process, it 
-means the whole code is valid.
+--------- our design ---------
+Our design suggests several steps for validating a s-java file:
+1.  lexer - The first part of the code analysis is the Lexical analysis. In this
+    process we convert the code to sequence of tokens, i.e. meaningful strings. 
+    Each token is atom in the language syntax e.g. the key word "if", open 
+    parentheses, identity, new line and so on. For each token we save the 
+    string, the type, and the position. This way, we convert a file to sequence 
+    of tokens. in case we want to extends the language in this part we need only 
+    add token types, by adding corresponding regex patterns.
+2.  parser - The second part of the code analysis is to build an AST (Abstract 
+	Syntax Tree) from the sequence of tokens. AST is a bijective tree 
+	representation of the abstract syntactic structure of source code. Each code 
+	could have only one way to be interpreted as a tree and vice versa. If the 
+	building the AST is a success, it is ensured that the code syntax structure 
+	is valid, i.e. while statements, all the brackets and so on are OK. It is 
+	not enough to ensure that the code is OK, since types, duplicate declaration 
+	and other problems involving names references are not checked yet.
+3.  validator - The last part of the analysis is "running the code" and check it 
+	is OK. We are going over the AST, in a manner that represents running the 
+	code, and keeping the variables, their state - initialized or not - and the 
+	scope of their declaration. This way we validate the tree, and if no 
+	exception was thrown during the process, it means the whole code is valid.
 
+--------- alternative design ---------
 We could have used regex for full lines, which will save us the need of 
 validating lines break and and will allow us to know the specific context for 
-each line, but we preferred a 
+each line, but we preferred short tokens to make the parser simpler and 
+flexible.
 We could have also read the file more directly, instead of turning it into a 
 tree and validating it back and forth. However, the need to allow a method to 
-call predifined methods and global variables made us to think of way of parsing 
+call predefined methods and global variables made us to think of way of parsing 
 the code as it is, and then access it again easily enough.
-We had a dilemma regarding checking the AST by the nodes themself, but decided 
+We had a dilemma regarding checking the AST by the nodes themselves, but decided 
 to do it externally, to keep the modularity between the syntax and and the run, 
 which also lets us to keep the state as a VarStack field of AstValidator and not 
 passing it as a parameter each recursive call inside a node.
 
+========= extents language =========
+--------- add float type ---------
 To add new variable types, we have to:
 1. 	Update the lexer to recognize the new type as var type instead of identity.
 2.	If the new type have a corresponding literal data:
@@ -106,23 +112,31 @@ To add new variable types, we have to:
 	b.	Update the isLiteralData parser function to recognize this token as 
 		literal data. 
 3.	Add the new type to the ExpressionType enum of the ast nodes.
-For example, float numbers will require us to add 2 patterns - "float\\b" and 
-"-?\\d+\\.\\d+f", and the expression type "FLOAT".
-In addition, we should also update the ExpressionNode.ExpressionType.accept 
-method, to allow conversions between the new and the existing types. If a lot of 
-conversions are allowed in the expanded language, we might think of a new way 
-for accept() to work, since the relatively-simple boolean expression it returns 
-will get ugly. The problem is java does not allow us to keep a list of types for 
-each type at the enum declaration.
 
-Supporting switch statements means we need to add tokens for switch, case, 
-default and break. We need to create SwitchNode, with a List<CaseNode> as its 
-children, when CaseNode has a variable expression and a literal expression to 
-be compared, and a body. Each ScopeNode will be connected to previous scopes 
-since the last break statement. Parsing and validating will be updated 
-accordingly, verifying the syntax is as required before creating this node and 
-the type of the variable is accepted by BOOLEAN.
+For example, float numbers will require us to add 2 patterns - "float\\b" that
+recognize the "float" key word and "-?\\d+\\.\\d+f" that recognize the float
+literal values, and the expression type "FLOAT". In addition, we should also
+update the ExpressionNode.ExpressionType.accept method, to allow conversions
+between the new and the existing types. If a lot of conversions are allowed in
+the expanded language, we might think of a new way for accept() to work, since
+the relatively-simple boolean expression it returns will get ugly. The problem
+is java does not allow us to keep a list of types for each type at the enum 
+declaration.
 
+--------- add switch syntax ---------
+Supporting switch statements means we need to add tokens for the key words:
+*   switch
+*   case
+*   default
+*   break
+We need to create SwitchNode, with a List<CaseNode> as its children, when 
+CaseNode has a variable expression and a literal expression to be compared, and 
+a body. Each ScopeNode will be connected to previous scopes since the last break 
+statement. Parsing and validating will be updated accordingly, verifying the 
+syntax is as required before creating this node and the type of the variable is 
+accepted by BOOLEAN.
+
+--------- add binary and unary operations ---------
 Supporting binary operators requires extending BinaryOpNode and creating a
 similar abstract UnaryOpNode with one expression child, adding the operators 
 names and patterns to the correct enums, making the parser check them at every 

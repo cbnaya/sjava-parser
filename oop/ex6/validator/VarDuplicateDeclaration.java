@@ -15,7 +15,7 @@ public class VarDuplicateDeclaration extends VariableException {
      * @param varDeclarationNode The node representing the problematic 
      * declaration.
      */
-    public VarDuplicateDeclaration(final VarDeclarationNode varDeclarationNode)
+    public VarDuplicateDeclaration(VarDeclarationNode varDeclarationNode)
     {
         super(String.format(ERROR_MESSAGE_FORMAT, varDeclarationNode.getName(),
                 varDeclarationNode.getPosition().toString()));

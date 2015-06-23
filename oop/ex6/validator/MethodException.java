@@ -11,7 +11,7 @@ public abstract class MethodException extends InvalidCodeException {
 	 * Constructs a new exception with the specified detail message.
 	 * @param message The detail message.
 	 */
-	public MethodException(final String message) {
+	public MethodException(String message) {
 		super(message);
 	}
 }

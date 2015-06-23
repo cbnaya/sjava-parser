@@ -11,7 +11,7 @@ public class MissingReturnException extends MethodException {
 	public static final String ERROR_MESSAGE_FORMAT = 
 			"method %s does not end with a return statement (%s)";
 
-    public MissingReturnException(final MethodNode methodNode) {
+    public MissingReturnException(MethodNode methodNode) {
         super(String.format(ERROR_MESSAGE_FORMAT, methodNode.getName(), 
         		methodNode.getPosition()));
     }

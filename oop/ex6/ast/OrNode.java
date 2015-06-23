@@ -13,12 +13,14 @@ public class OrNode extends BinaryOpNode {
 	 * @param left x
 	 * @param right y
 	 */
-	public OrNode(final Position position, final ExpressionNode left, 
-			final ExpressionNode right)
+	public OrNode(Position position, ExpressionNode left, ExpressionNode right)
 	{
 		super(position, left, right);
 	}
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.OR;

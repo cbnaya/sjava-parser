@@ -11,7 +11,7 @@ public abstract class VariableException extends InvalidCodeException {
 	 * Constructs a new exception with the specified detail message.
 	 * @param message The detail message.
 	 */
-	public VariableException(final String message) {
+	public VariableException(String message) {
 		super(message);
 	}
 

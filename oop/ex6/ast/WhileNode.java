@@ -14,11 +14,14 @@ public class WhileNode extends ConditionalNode {
 	 * @param condition The condition of the while.
 	 * @param body The nodes representing the code inside the while scope.
 	 */
-	public WhileNode(final Position position, final ExpressionNode condition, 
-			final List<AstNode> body) {
+	public WhileNode(Position position, ExpressionNode condition, 
+			List<AstNode> body) {
         super(position, condition, body);
 	}
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.ScopeNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.WHILE;

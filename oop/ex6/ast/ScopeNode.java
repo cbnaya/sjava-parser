@@ -11,12 +11,13 @@ import oop.ex6.lexer.Position;
  */
 public class ScopeNode extends AstNode {
 
+	// The nodes representing the code inside this scope.
 	private final List<AstNode> body;
 
 	/**
 	 * @param position The position in the file the scope starts.
 	 */
-	public ScopeNode(final Position position) {
+	public ScopeNode(Position position) {
 		super(position);
 		this.body= new LinkedList<AstNode>();
 	}
@@ -25,7 +26,7 @@ public class ScopeNode extends AstNode {
 	 * @param position The position in the file of the node's creation.
 	 * @param body The nodes representing the code inside this scope.
 	 */
-	public ScopeNode(final Position position, final List<AstNode> body) {
+	public ScopeNode(Position position, List<AstNode> body) {
 		super(position);
 		this.body = body;
 	}
@@ -33,7 +34,7 @@ public class ScopeNode extends AstNode {
 	/**
 	 * @param node A new child to the scope body.
 	 */
-	public void add(final AstNode node)
+	public void add(AstNode node)
 	{
 		body.add(node);
 	}
@@ -41,7 +42,7 @@ public class ScopeNode extends AstNode {
 	/**
 	 * @param nodes new children to the scope body.
 	 */
-	public void addAll(final Collection<? extends AstNode> nodes)
+	public void addAll(Collection<? extends AstNode> nodes)
 	{
 		body.addAll(nodes);
 	}
@@ -53,6 +54,9 @@ public class ScopeNode extends AstNode {
 		return body;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.CODE_SCOPE;

@@ -14,7 +14,7 @@ public class MethodDoesNotExistException extends MethodException {
     /**
      * @param callMethodNode The node representing the method call.
      */
-    public MethodDoesNotExistException(final CallMethodNode callMethodNode) {
+    public MethodDoesNotExistException(CallMethodNode callMethodNode) {
         super(String.format(ERROR_MESSAGE_FORMAT, callMethodNode.getName(), 
         		callMethodNode.getPosition()));
     }

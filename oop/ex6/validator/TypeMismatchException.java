@@ -19,9 +19,8 @@ public class TypeMismatchException extends InvalidCodeException {
 	 * @param actualType The type of the assigned expression.
 	 * @param position The position in the file of the assignment.
 	 */
-	public TypeMismatchException(final String name, 
-			final ExpressionType requiredType, final ExpressionType actualType, 
-			final Position position) {
+	public TypeMismatchException(String name, ExpressionType requiredType, 
+			ExpressionType actualType, Position position) {
 		super(String.format(ERROR_MESSAGE_FORMAT, name, requiredType.name(), 
 				actualType.name(), position));
 	}
