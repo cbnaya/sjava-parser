@@ -36,7 +36,7 @@ public class Sjavac {
             print(IO_ERROR_MESSAGE);
             return;
         }
-        catch (Exception e)
+        catch (ParsingFailedException|InvalidCodeException e)
         {
             print("1");
             printError(e.getMessage());
