@@ -65,14 +65,14 @@ public class Token {
         }
 
         /**
-         * return legal group name
-         * necessary because regex group name is limited (e.g. underscore is illegal)
-         * this function remove all the illegal char from the name
+         * Since regex group name is limited (e.g. underscore is illegal), this 
+         * function removes all the illegal char from the name.
          *
          * @return legal group name
          */
         public final String getGroupName() {
-            return Pattern.compile(ILLEGAL_CHARS_PATTERN).matcher(name()).replaceAll("");
+            return Pattern.compile(ILLEGAL_CHARS_PATTERN).matcher(name()).
+            		replaceAll("");
         }
     }
 
@@ -97,7 +97,8 @@ public class Token {
      * @param startPosition - the start position of the token
      * @param endPosition   - the end position of the token
      */
-    Token(TokenType tokenType, String tokenData, Position startPosition, Position endPosition) {
+    Token(TokenType tokenType, String tokenData, Position startPosition, 
+    		Position endPosition) {
         type = tokenType;
         data = tokenData;
         this.startPosition = startPosition;

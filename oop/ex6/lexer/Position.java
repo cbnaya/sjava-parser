@@ -4,6 +4,7 @@ package oop.ex6.lexer;
  * this class represent a location in the file
  */
 public class Position {
+	
     //the to string message format
     public static final String TO_STRING_FORMAT = "line %d column %d";
     //regex of new line of the split
@@ -62,7 +63,10 @@ public class Position {
             throw new IndexOutOfBoundsException();
         }
 
-        //in case of EOF we decrease the offset to point to the last char in the file
+        /*
+         * In case of EOF, we decrease the offset to point to the last char in 
+         * the file.
+         */
         if (offset == input.length()) {
             offset--;
         }
@@ -73,7 +77,10 @@ public class Position {
         int line = lines.length;
         int column = lines[lines.length - 1].length();
 
-        //if the offset is point to new line we represent him as the last char of the prev line
+        /*
+         * If the offset is point to new line, we represent it as the last char 
+         * of the prev line.
+         */
         if (Character.toString(input.charAt(offset)).matches(NEW_LINE_REGEX)) {
             column++;
         }
