@@ -67,6 +67,11 @@ public class AstValidator {
 	 * @param globalNode The root of the ast representing the code.
 	 * @throws InvalidCodeException If the code is found invalid.
 	 */
+	/*
+	 * The global level of the stack is created each time, to match the 
+	 * requirement of ignoring changes done to global variables at methods and 
+	 * the general assume the order of method declarations is not considered.
+	 */
 	public static void globalValidate(final GlobalNode globalNode) 
 			throws InvalidCodeException {
 		for (final MethodNode method : globalNode.getMethods()) {
