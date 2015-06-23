@@ -235,6 +235,7 @@ public class Parser {
             }
             case ASSIGNMENT_OP: {
                 AssignmentNode assignmentNode = parseAssignment();
+                tokenizer.next();
                 validEndOfStatement();
                 return assignmentNode;
             }
