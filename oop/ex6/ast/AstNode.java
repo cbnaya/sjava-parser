@@ -25,7 +25,7 @@ public abstract class AstNode {
 	/**
 	 * @param position The position in the file of the node's creation.
 	 */
-	public AstNode(final Position position) {
+	public AstNode(Position position) {
 		this.position = position;
 	}
 

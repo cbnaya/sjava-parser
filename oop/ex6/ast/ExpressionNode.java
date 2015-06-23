@@ -22,7 +22,7 @@ public abstract class ExpressionNode extends AstNode {
 		 * @return Whether a variable with this type can be assigned with an
 		 * expression of expType.
 		 */
-		public boolean accept(final ExpressionType expType) {
+		public boolean accept(ExpressionType expType) {
 			return (this == expType) ||
 					(this == DOUBLE && expType == INT) ||
 					(this == BOOLEAN && (expType == INT || expType == DOUBLE));
@@ -33,7 +33,7 @@ public abstract class ExpressionNode extends AstNode {
 	/**
 	 * @param position The position in the file the expression is mentioned.
 	 */
-	public ExpressionNode(final Position position) {
+	public ExpressionNode(Position position) {
 		super(position);
 	}
 

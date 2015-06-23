@@ -19,8 +19,8 @@ public class VarDeclarationNode extends AstNode {
      * @param name The variable's name.
      * @param isFinal Whether the variable is assignable after declaration.
      */
-	public VarDeclarationNode(final Position position, final String type, 
-			final String name, final boolean isFinal) {
+	public VarDeclarationNode(Position position, String type, String name, 
+			boolean isFinal) {
         super(position);
         this.type = ExpressionType.valueOf(type.toUpperCase());
         this.name = name;

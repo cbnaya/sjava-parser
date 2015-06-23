@@ -17,8 +17,8 @@ public class CallMethodNode extends AstNode {
      * @param methodName The name of the called method.
      * @param methodArgs The arguments the method is called with.
      */
-    public CallMethodNode(final Position position, final String methodName, 
-    		final List<ExpressionNode> methodArgs) {
+    public CallMethodNode(Position position, String methodName, 
+    		List<ExpressionNode> methodArgs) {
 		super(position);
         name = methodName;
 		args = methodArgs;

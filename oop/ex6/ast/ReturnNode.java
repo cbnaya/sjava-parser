@@ -10,7 +10,7 @@ public class ReturnNode extends AstNode {
     /**
      * @param position The position in the file of the statement.
      */
-    public ReturnNode(final Position position) {
+    public ReturnNode(Position position) {
         super(position);
     }
 

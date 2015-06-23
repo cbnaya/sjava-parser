@@ -20,8 +20,8 @@ public class LiteralExpressionNode extends ExpressionNode {
 	 * written in the file.
 	 * @param type The actual type of the value.
 	 */
-	public LiteralExpressionNode(final Position position, final String value, 
-			final ExpressionType type) {
+	public LiteralExpressionNode(Position position, String value, 
+			ExpressionType type) {
 		super(position);
 		this.type = type;
         this.value = value;

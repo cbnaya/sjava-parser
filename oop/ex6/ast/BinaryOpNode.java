@@ -15,8 +15,8 @@ public abstract class BinaryOpNode extends ExpressionNode {
      * @param left The left side of the operation.
      * @param right The right side of the operation.
      */
-    public BinaryOpNode(final Position position, final ExpressionNode left, 
-    		final ExpressionNode right) {
+    public BinaryOpNode(Position position, ExpressionNode left, 
+    		ExpressionNode right) {
         super(position);
         this.left = left;
         this.right = right;

@@ -16,8 +16,8 @@ public class GlobalNode extends ScopeNode {
 	 * @param globalBody All global code (as opposed to code inside methods).
 	 * @param globalMethods Method declarations.
 	 */
-	public GlobalNode(final List<AstNode> globalBody, 
-			final List<MethodNode> globalMethods) {
+	public GlobalNode(List<AstNode> globalBody, List<MethodNode> globalMethods)
+	{
 		super(new Position(0,0), globalBody);
 		methods = globalMethods;
 	}

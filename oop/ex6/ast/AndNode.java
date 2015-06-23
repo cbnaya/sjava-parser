@@ -13,8 +13,8 @@ public class AndNode extends BinaryOpNode {
 	 * @param left x
 	 * @param right y
 	 */
-	public AndNode(final Position position, final ExpressionNode left, 
-			final ExpressionNode right) {
+	public AndNode(Position position, ExpressionNode left, ExpressionNode right) 
+	{
 		super(position, left, right);
 	}
 

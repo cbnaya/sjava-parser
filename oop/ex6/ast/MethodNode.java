@@ -18,8 +18,8 @@ public class MethodNode extends ScopeNode {
 	 * @param methodArgs The method's arguments.
 	 * @param methodBody The method's code body.
 	 */
-	public MethodNode(final Position position, final String methodName, 
-			final List<ArgumentNode> methodArgs, final List<AstNode> methodBody)
+	public MethodNode(Position position, String methodName, 
+			List<ArgumentNode> methodArgs, List<AstNode> methodBody)
 	{
 		super(position, methodBody);
 		name = methodName;

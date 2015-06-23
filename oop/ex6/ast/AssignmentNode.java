@@ -17,8 +17,8 @@ public class AssignmentNode extends AstNode {
      * @param name The name of the variable assigning to.
      * @param value The assigned expression.
      */
-    public AssignmentNode(final Position position, final String name, 
-    		final ExpressionNode value) {
+    public AssignmentNode(Position position, String name, ExpressionNode value) 
+    {
 		super(position);
         this.name = name;
 		this.value = value;
