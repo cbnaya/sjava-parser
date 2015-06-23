@@ -1,78 +1,56 @@
-#Week 8 Questions
-#================
-
-# Choose the correct statement about the Factory design pattern
-#1: Every Factory is a class that implements the Factory interface.
-#2: All the objects that a factory returns are always the same object (all pointers 
-#   point to the same object).
-#3: The reference returned by a Factory may be a static data member of the factory.
-#4: If a Factory can produce some object, then it is the only way to produce that kind of object.
-
-w8Answer1 = 0
-# optional explanation.
-
-#Choose the incorrect statement:
-#1: The source code of a module designed according to the open-closed principle should not be 
-#   changed (or changed as little as possible).
-#2: In a design that satisfies modular decomposability each module is independent of the others
-#   and therefore can serve other purposes if combined with other modules.
-#3: A Factory may be a class, an interface, or a method.
-#4: The constructors of a Singleton class must not be public.
-
-w8Answer2 = 0
-# optional explanation.
-
-#Choose all correct statements:
-#1: if a software is composed of modules that can be used in other programs
-#   as well, then we can say that this software’s design satisfies Modular Composability.
-#2: The polymorphism mechanism supports the Open-Closed principle.
-#3: If we want to create a sorting strategy, a good solution would be to create a class called 
-#   SimpleSort and the classes representing the different sorting strategies should extend this class.
-#4: The Understandability principle says the code has to be readable (well documented, descriptive 
-#   variable names, etc').
-#5: The open-closed principle says that a module should be open for modification but closed to extension.
-#6: A class that all its fields and methods are static can also be called a Singleton.
-
-w8Answer3 = (0,0,0)
-# The answer should be a group of the chosen numbers, i.e. (1,7) or (2,6,1), etc'.
-# optional explanation.
-
-
-#Week 9 Questions
+#Week 10 Questions
 #============
 
-# When reading bytes from a large file, we should use a buffered reader because:
-#1: In Java, files with size greater than a certain size cannot be read without using a buffer.
-#2: If we don't use a buffer, the system memory becomes overloaded.
-#3: Using a buffered reader is the only way to read files in java, and it holds for non-large files as well.
-#4:  buffered reading takes advantage of properties of the OS and the hardware to speed up the process
+#class A { }
+#class B extends A { }
+#List<? extends A> myList = new LinkedList<B>();
+#Iterator<? extends A> it = myList.iterator();
+#Select all lines that will pass compilation
+#1: A a = it.next();
+#2: B b = it.next();
+#3: B b = (B) it.next();
+#4: <? extends A> a = it.next();
 
-w9Answer1 = 0
-# optional explanation.
+w10Answer1 = (1,3)
+# The answer should be a python-tuple of the chosen numbers, i.e. (1,7,3,8) or (2,6,1)
+# optional explanation (a single line):
 
-#If we want to be able to read compressed files and also use a buffer to read them, a good solution
-#would include:
-#1: Creating a class that extends CompressedFileInputStream and add a buffered reading capability to it.
-#2: Creating a class that extends BufferedFileInputStream and add a decompression capability to it.
-#3: Creating a class that extends InputStream that reads to a buffer, and another class that 
-#   extends InputStream that uses decompression.
-#4: Creating a class that extends InputStream and add buffered reading and a decompression capability to it.
+#Set<String> stringSet = new HashSet<>();
+#mySet.addAndPrintAll(stringSet);
+#For what declaration of the addAndPrintAll() method will the code compile: (single choice)
+#1: public void addAndPrintAll(Collection<Object>);
+#2: public void addAndPrintAll(Set<Object>);
+#3: public void addAndPrintAll(Collection<? extends String>);
+#4: public void addAndPrintAll(List<? extends Object>);
 
-w9Answer2 = 0
-# optional explanation.
+w10Answer2 = 3
+# optional explanation (a single line):
 
-# If A decorates B then A also composes B.
-#1: Correct
-#2: Incorrect
+#Week 11 Questions
+#============
 
-w9Answer3 = 0
-# optional explanation.
+#Pattern p = Pattern.compile("\\s*f*r*\\d+\\w");
+#Matcher m = p.matcher("fff88");
+#boolean b = m.matches();
+#System.out.println(b);
+#What will this program output? (single choice)
+#1: A compilation error
+#2: false
+#3: true
+#4: null pointer exception
 
-#Which of the following is not true?
-#1: Scanner can receive a BufferedInputStream as a parameter.
-#2: A BufferedInputStream can receive a Scanner as a parameter.
-#3: BufferedInputStream's constructor can receive another BufferedInputStream as a parameter.
-#4: In Java, when we read a file’s content, or we write content to a file, an I/O exception might occur.
+w11Answer1 = 3
+# optional explanation (a single line):
 
-w9Answer4 = 0
-# optional explanation.
+#Pattern p = Pattern.compile("Names:(([a-z]+,)+)\\1*");
+#Matcher m = p.matcher("Names:abi,gadi,abi,gadi,abi,gadi,");
+#boolean b = m.matches();
+#System.out.println(m.group(1));
+#What will this program output? (single choice)
+#1: gadi,
+#2: Names:abi,gadi,abi,gadi,abi,gadi,
+#3: abi,gadi,abi,gadi,abi,gadi,
+#4: abi,gadi,
+
+w11Answer2 = 3
+# optional explanation (a single line):
