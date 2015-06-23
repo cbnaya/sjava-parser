@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 /**
  * this iterator is more powerful iterator. the additional function is :
  * 1. get current - return the current object of the iterator
- * 2. get next - return the next element but not change the iterator location (as opposed to next function)
+ * 2. get next - return the next element but not change the iterator location 
+ * (as opposed to next function)
  *
  * @param <T> - the iterator elements type
  */
