@@ -115,7 +115,7 @@ To add new variable types, we have to:
 
 For example, float numbers will require us to add 2 patterns - "float\\b" that
 recognize the "float" key word and "-?\\d+\\.\\d+f" that recognize the float
-literal values , and the expression type "FLOAT". In addition, we should also
+literal values, and the expression type "FLOAT". In addition, we should also
 update the ExpressionNode.ExpressionType.accept method, to allow conversions
 between the new and the existing types. If a lot of conversions are allowed in
 the expanded language, we might think of a new way for accept() to work, since

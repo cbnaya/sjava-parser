@@ -18,6 +18,9 @@ public class ArgumentNode extends VarDeclarationNode {
 		super(position, argType, argName, isFinal);
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.VarDeclarationNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.ARGUMENT;

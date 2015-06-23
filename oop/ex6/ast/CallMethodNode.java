@@ -38,6 +38,9 @@ public class CallMethodNode extends AstNode {
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.CALL_METHOD;

@@ -1,15 +1,17 @@
 package oop.ex6.ast;
 
+import oop.ex6.ast.ExpressionNode.ExpressionType;
 import oop.ex6.lexer.Position;
 
 /**
  * Representing a declaration of a variable.
  */
 public class VarDeclarationNode extends AstNode {
-
-	private final boolean isFinal;
+	 
     private final String name;
-    private final ExpressionNode.ExpressionType type;
+    private final ExpressionType type;
+    // Whether the variable is assignable after declaration.
+    private final boolean isFinal;
     
     /**
      * @param position The position in the file of the variable declaration.
@@ -20,7 +22,7 @@ public class VarDeclarationNode extends AstNode {
 	public VarDeclarationNode(final Position position, final String type, 
 			final String name, final boolean isFinal) {
         super(position);
-        this.type = ExpressionNode.ExpressionType.valueOf(type.toUpperCase());
+        this.type = ExpressionType.valueOf(type.toUpperCase());
         this.name = name;
         this.isFinal = isFinal;
     }
@@ -31,23 +33,26 @@ public class VarDeclarationNode extends AstNode {
     public String getName() {
         return name;
     }
-    
-    @Override
-    public NodeType getNodeType() {
-        return NodeType.VAR_DECLARATION;
-    }
 
     /**
      * @return The variable's declared type.
      */
-    public ExpressionNode.ExpressionType getType() {
+    public ExpressionType getType() {
         return type;
     }
 
     /**
-     * @return Whether the variable is assignable after delaration.
+     * @return Whether the variable is assignable after declaration.
      */
     public boolean isFinal() {
     	return isFinal;
+    }
+    
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.VAR_DECLARATION;
     }
 }

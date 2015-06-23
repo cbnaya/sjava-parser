@@ -8,7 +8,11 @@ import oop.ex6.lexer.Position;
 public class LiteralExpressionNode extends ExpressionNode {
 
 	private final ExpressionType type;
-    private final String value;
+    /*
+     * The value of the expression in a string format, as was
+	 * written in the file.
+     */
+	private final String value;
 
 	/**
 	 * @param position The position in the file the expression is mentioned.
@@ -23,11 +27,17 @@ public class LiteralExpressionNode extends ExpressionNode {
         this.value = value;
     }
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
     @Override
 	public NodeType getNodeType() {
         return NodeType.LITERAL;
     }
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.ExpressionNode#getType()
+     */
     @Override
     public ExpressionType getType() {
         return type;

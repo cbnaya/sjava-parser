@@ -20,6 +20,9 @@ public class IfNode extends ConditionalNode {
     }
 
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.ScopeNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.IF;

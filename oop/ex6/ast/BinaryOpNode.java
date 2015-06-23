@@ -3,10 +3,11 @@ package oop.ex6.ast;
 import oop.ex6.lexer.Position;
 
 /**
- * A node of binary oprator, consisting two boolean expressions.
+ * A node of binary operator, consisting two boolean expressions.
  */
 public abstract class BinaryOpNode extends ExpressionNode {
 
+	// The expressions the operator is operated on.
     private final ExpressionNode left, right;
     
     /**
@@ -20,7 +21,6 @@ public abstract class BinaryOpNode extends ExpressionNode {
         this.left = left;
         this.right = right;
     }
-
 
     /**
      * @return The left side of the operation.
@@ -36,9 +36,11 @@ public abstract class BinaryOpNode extends ExpressionNode {
         return right;
     }
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.ExpressionNode#getType()
+     */
     @Override
-	public ExpressionType getType()
-    {
+	public ExpressionType getType() {
         return ExpressionType.BOOLEAN;
     }
 

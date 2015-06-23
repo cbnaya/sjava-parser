@@ -18,6 +18,9 @@ public class AndNode extends BinaryOpNode {
 		super(position, left, right);
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.AND;

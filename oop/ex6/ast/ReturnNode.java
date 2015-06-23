@@ -14,6 +14,9 @@ public class ReturnNode extends AstNode {
         super(position);
     }
 
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
     @Override
     public NodeType getNodeType() {
         return NodeType.RETURN;

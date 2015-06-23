@@ -26,11 +26,17 @@ public class VarExpressionNode extends ExpressionNode {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.VAR_VAL;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.ExpressionNode#getType()
+	 */
 	@Override
 	public ExpressionType getType() {
 		throw new UnsupportedOperationException();

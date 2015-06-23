@@ -11,6 +11,7 @@ import oop.ex6.lexer.Position;
  */
 public class ScopeNode extends AstNode {
 
+	// The nodes representing the code inside this scope.
 	private final List<AstNode> body;
 
 	/**
@@ -53,6 +54,9 @@ public class ScopeNode extends AstNode {
 		return body;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.CODE_SCOPE;

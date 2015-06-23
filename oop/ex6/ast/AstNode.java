@@ -19,6 +19,7 @@ public abstract class AstNode {
 		VAR_DECLARATION, CALL_METHOD, ASSIGNMENT, LITERAL, VAR_VAL, OR, AND
 	}
 
+	// The original position in the file.
 	private final Position position;
 
 	/**

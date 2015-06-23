@@ -7,7 +7,9 @@ import oop.ex6.lexer.Position;
  */
 public class AssignmentNode extends AstNode {
 
+	// The assigned expression.
 	private final ExpressionNode value;
+	// The name of the variable assigning to.
 	private final String name;
 	
     /**
@@ -29,6 +31,9 @@ public class AssignmentNode extends AstNode {
         return name;
     }
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.AstNode#getNodeType()
+	 */
 	@Override
     public NodeType getNodeType() {
         return NodeType.ASSIGNMENT;

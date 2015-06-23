@@ -40,6 +40,9 @@ public class MethodNode extends ScopeNode {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see oop.ex6.ast.ScopeNode#getNodeType()
+	 */
 	@Override
 	public NodeType getNodeType() {
 		return NodeType.METHOD;

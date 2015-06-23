@@ -17,8 +17,7 @@ public abstract class ConditionalNode extends ScopeNode {
 	 * @param body The nodes representing the code inside this scope.
 	 */
 	public ConditionalNode(final Position position, 
-			final ExpressionNode condition, final List<AstNode> body)
-	{
+			final ExpressionNode condition, final List<AstNode> body) {
 		super(position, body);
 		this.condition = condition;
 	}
