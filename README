@@ -16,12 +16,13 @@ Parser.java - 					Parses a s-java file and returns an abstract
 								syntax tree representing the code.
 ComplexItrator.java - 			An iterator which keeps its last returned 
 								value. 
-OtherTokenTypeNeedHere.java - 	Thrown when expecting a specific token, but 
-								another appears.
-NotAllowedInThisContext.java - 	Thrown if a token unrelated to the context was 
-								parsed. 
-InvalidIdentityName.java - 		Thrown when trying to name a method or a 
-								variable with invalid name.
+ParsingFailedException.java -	Thrown if the parsing failed.
+OtherTokenTypeNeedHereException.java - 	Thrown when expecting a specific token, 
+										but another appears.
+NotAllowedInThisContextException.java - 	Thrown if a token unrelated to the 
+											context was parsed.
+InvalidIdentityNameException.java - 		Thrown when trying to name a method 
+											or a variable with invalid name.
 
 
 AstNode.java - 			Representing a node in an abstract syntax tree.
@@ -46,60 +47,73 @@ AssignmentNode.java - 	Representing an assignment of a variable with an
 CallMethodNode.java - 	A node for calling a method.
 ReturnNode.java - 		Representing a return statement.
 
-AstValidator.java - 	Checks the state of the program is valid at each stage.
-VarStack.java - 		Keeps the state of the program.
+AstValidator.java - 	Checks the state of the program is valid step by step.
+VarStack.java - 		Keeps the state of the code.
 Variable.java -			VarStack element.
-MethodMustEndWithReturnException.java - Thrown if a method did not end with return.
-MethodDoesNotExistsException.java, VariableDoesNotExistException.java -
+InvalidCodeException.java - 	Is thrown when there's some problem regarding a 
+								s-java file.
+TypeMismatchException.java - 	Is thrown when trying to assign a variable,
+								argument or a condition with a wring type.
+MethodException.java, VariableException.java -	Abstract extensions of 
+												InvalidCodeException.
+MethodDoesNotExistException.java, MissingReturnException.java, 
+ArgumentsNumMismatchException.java - 			Types of MethodException.
+FinalAssignmentException.java, VarDoesNotExistException.java, 
+VarDuplicateException.java, VarNeverAssignedException.java - 
+												Types of VariableException.
+
 
 =============================
 =          Design           =
 =============================
-Our design suggests several steps for validating a s-java file. First, we 
-defined the different tokens of the language. This way, we could split a file 
-into the different tokens, and might easily add new words and types, by adding 
-some new regex patterns.
-Then we created nodes for AST (Abstract Syntax Tree), which represents the 
-syntactic structure of source code bijectively (In our implementation, assuming 
-the order of method declarations does not matter), so each code could have only 
-one way to be interpreted as a tree and vice versa. A tree for a code with bad 
-syntax could not be created, but referencing a method or a variable from a 
-different part of the code with bad typing or number of arguments is handled 
-after a tree exists.
-Later, we wrote a parser which parses each token in a file and converts them 
-into the AST nodes accordingly, and throws an exeption if it finds a syntactic 
-error.
-At last, we made a ...
+Our design suggests several steps for validating a s-java file.
+The first part of the code analysis is the Lexical analysis. In this process we 
+convert the code to sequence of tokens, i.e. meaningful strings. Each token is 
+atom in the language syntax e.g. the key word "if", open parentheses, identity, 
+new line and so on. For each token we save the string, the type, and the 
+position. This way, we could split a file into the different tokens, and might 
+easily add new words and types, by adding some new regex patterns. 
+The second part of the code analysis is to build an AST (Abstract Syntax Tree) 
+from the sequence of tokens. AST is a bijective tree representation of the 
+abstract syntactic structure of source code. Each code could have only one way 
+to be interpreted as a tree and vice versa. If the building the AST is a 
+success, it is ensured that the code syntax structure is valid, i.e. while 
+statements, all the brackets and so on are OK.
+it is not enough to ensure that the code is OK, since types, duplicate 
+declaration and other problems involving names references are not checked yet, 
+and here comes the validator. The last part of the analysis is going over the 
+AST, in a manner that represents running the code, and keeping the variables,
+their state - initialized or not - and the scope of their declaration. This way 
+we validate the tree, and if no exception was thrown during the process, it 
+means the whole code is valid.
 
 We could have used regex for full lines, which will save us the need of 
 validating lines break and and will allow us to know the specific context for 
-each line, but ...
+each line, but we preferred a 
 We could have also read the file more directly, instead of turning it into a 
 tree and validating it back and forth. However, the need to allow a method to 
 call predifined methods and global variables made us to think of way of parsing 
 the code as it is, and then access it again easily enough.
 We had a dilemma regarding checking the AST by the nodes themself, but decided 
-to do it externally, to keep the modularity between ... , which also lets us to 
-keep the state as field of the validator and not passing it as a parameter each 
-recursive call inside a node.
+to do it externally, to keep the modularity between the syntax and and the run, 
+which also lets us to keep the state as a VarStack field of AstValidator and not 
+passing it as a parameter each recursive call inside a node.
 
-To add new variable types, we have to :
-1. 	update the lexer to recognize the new type as var type instead of identity.
-2.	if the new type have a corresponding literal data:
-	a.	add new token type (with corresponding regex) to the lexer. 
-	b.	update the isLiteralData parser function to recognize this token as literal data. 
-3.	add the new type to thw ExpressionType enum of the ast nodes.
-
-we new types of enums - at the regex 
-patterns and at the expression types. For example, float numbers will require 
-us to add 2 patterns - "float\\b" and ""-?\\d+\\.\\d+f", and the expression 
-type "FLOAT". In addition, we should also update the 
-ExpressionNode.ExpressionType.accept method, to allow conversions between the 
-new and the existing types. If a lot of conversions are allowed in the expanded 
-language, we might think of a new way for accept() to work, since the 
-relatively-simple boolean expression it returns will get ugly. The problem is 
-java does not allow us to keep a list of types for each type at the enum 
-declaration.
+To add new variable types, we have to:
+1. 	Update the lexer to recognize the new type as var type instead of identity.
+2.	If the new type have a corresponding literal data:
+	a.	Add new token type (with a corresponding regex) to the lexer. 
+	b.	Update the isLiteralData parser function to recognize this token as 
+		literal data. 
+3.	Add the new type to the ExpressionType enum of the ast nodes.
+For example, float numbers will require us to add 2 patterns - "float\\b" and 
+"-?\\d+\\.\\d+f", and the expression type "FLOAT".
+In addition, we should also update the ExpressionNode.ExpressionType.accept 
+method, to allow conversions between the new and the existing types. If a lot of 
+conversions are allowed in the expanded language, we might think of a new way 
+for accept() to work, since the relatively-simple boolean expression it returns 
+will get ugly. The problem is java does not allow us to keep a list of types for 
+each type at the enum declaration.
 
 Supporting switch statements means we need to add tokens for switch, case, 
 default and break. We need to create SwitchNode, with a List<CaseNode> as its 
@@ -109,6 +123,16 @@ since the last break statement. Parsing and validating will be updated
 accordingly, verifying the syntax is as required before creating this node and 
 the type of the variable is accepted by BOOLEAN.
 
+Supporting binary operators requires extending BinaryOpNode and creating a
+similar abstract UnaryOpNode with one expression child, adding the operators 
+names and patterns to the correct enums, making the parser check them at every 
+creation of an expression and making the validator to make sure the operators
+arguments are of the right types, according to the operator rule.
+Forcing precedence require even more complicated parsing, to determine how nodes
+of different operators are nested. For example, "1+2*3" will create multiply
+node with int literal and addition-op nodes as children, and the "+" will have
+two literal expressions as children. An int field for this types of op-nodes
+will be needed.
 
 =============================
 =  Implementation details   =
@@ -118,3 +142,14 @@ the AST nodes, so when a problem is found it is easy to find where it happened
 and report this position in the message of the thrown exception. It's a lot 
 easier to pass all the data of a problem back to the main module using an 
 exception object, so we used this mechanism as advised.
+
+At the validator, we had to create the global level of the stack each time,
+to match the requirement of ignoring changes done to global variables at methods
+and the general assume the order of method declarations is not considered.
+
+Except for the "\\w" pattern we used for identity names (variables and methods),
+we have no "main regular expressions". Our implementation of the lexer made it 
+easier not to use a lot of regex, and instead read each word as a token from the 
+predefined list, so we only have to check which token it was at the parser at a
+switch-case block, and it is possible for each token to appear in only a few
+parsing methods.

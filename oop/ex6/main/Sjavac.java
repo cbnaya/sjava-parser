@@ -3,7 +3,9 @@ package oop.ex6.main;
 import oop.ex6.ast.GlobalNode;
 import oop.ex6.lexer.Tokenizer;
 import oop.ex6.parser.Parser;
+import oop.ex6.parser.ParsingFailedException;
 import oop.ex6.validator.AstValidator;
+import oop.ex6.validator.InvalidCodeException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +45,7 @@ public class Sjavac {
             print(CODE_IS_LEGAL_MESSAGE);
         } catch (IOException e) {
             print(IO_ERROR_MESSAGE);
-        } catch (Exception e) {
+        } catch (ParsingFailedException | InvalidCodeException e) {
             print(CODE_IS_NOT_LEGAL_MESSAGE);
             printError(e.getMessage());
         }
