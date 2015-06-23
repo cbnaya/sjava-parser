@@ -8,21 +8,25 @@ import java.util.List;
 
 /**
  * Used for running over an AST to validate all references variables and methods
- * are legitimate, by checking all errors which can't be found during the tree
- * creation.
+ * are legitimate, in a manner that represents running the code by checking all 
+ * errors which can't be found during the tree creation, because types, 
+ * duplicate declaration and other problems involving names references are still 
+ * to be checked.
  */
 public class AstValidator {
 
+	// Used at exceptions which requiring variable names.
 	public static final String CONDITION_NAME = "condition";
+	// Keeps the variables state.
 	private final VarStack stack;
+	// Keeps the declared methods.
 	private final List<MethodNode> methodList;
 
 	/**
 	 * @param stack A call stack to keep track of the state of the variable. 
 	 * @param methodList All methods that could be called.
 	 */
-	public AstValidator(final VarStack stack, final List<MethodNode> methodList)
-	{
+	public AstValidator(VarStack stack, List<MethodNode> methodList) {
 		this.stack = stack;
 		this.methodList = methodList;
 	}
@@ -32,7 +36,7 @@ public class AstValidator {
 	 * @param codeScope A scope to validate, step by step.
 	 * @throws InvalidCodeException If this scope was found invalid.
 	 */
-	public void run(final ScopeNode codeScope) throws InvalidCodeException {
+	public void run(ScopeNode codeScope) throws InvalidCodeException {
 		validateCodeScope(codeScope, false);
 	}
 
@@ -40,7 +44,7 @@ public class AstValidator {
 	 * @param method A method to validate, step by step.
 	 * @throws InvalidCodeException If this method was found invalid.
 	 */
-	public void run(final MethodNode method) throws InvalidCodeException {
+	public void run(MethodNode method) throws InvalidCodeException {
 		validateFunction(method);
 	}
 
@@ -61,12 +65,12 @@ public class AstValidator {
 	 * requirement of ignoring changes done to global variables at methods and 
 	 * the general assume the order of method declarations is not considered.
 	 */
-	public static void globalValidate(final GlobalNode globalNode) 
+	public static void globalValidate(GlobalNode globalNode) 
 			throws InvalidCodeException {
         getGlobalVariableStack(globalNode);
-		for (final MethodNode method : globalNode.getMethods()) {
-			final VarStack varStack = getGlobalVariableStack(globalNode);
-			final AstValidator astValidator = new AstValidator(varStack, 
+		for (MethodNode method : globalNode.getMethods()) {
+			VarStack varStack = getGlobalVariableStack(globalNode);
+			AstValidator astValidator = new AstValidator(varStack, 
 					globalNode.getMethods());
 			astValidator.run(method);
 		}
@@ -77,52 +81,57 @@ public class AstValidator {
 	 * @return A stack containing all global variables.
 	 * @throws InvalidCodeException If there is a problem at the global scope.
 	 */
-	public static VarStack getGlobalVariableStack(final GlobalNode globalNode) 
+	public static VarStack getGlobalVariableStack(GlobalNode globalNode) 
 			throws InvalidCodeException {
-		final VarStack stack = new VarStack();
+		VarStack stack = new VarStack();
 		stack.enterScope();
 
-		final AstValidator astValidator = new AstValidator(stack, 
+		AstValidator astValidator = new AstValidator(stack, 
 				globalNode.getMethods());
 		astValidator.run(globalNode);
 
 		return astValidator.getStack();
 	}
 
-	private void validateFunction(final MethodNode methodNode) 
+	/*
+	 * An helper method for the overloading run(MethodNode).
+	 * Validates the method code was declared right.
+	 * @throws InvalidCodeException If not.
+	 */
+	private void validateFunction(MethodNode methodNode) 
 			throws InvalidCodeException {
 		stack.enterScope();
 
-		for (final ArgumentNode arg : methodNode.getArgs()) {
-			final Variable var = stack.add(arg);
+		for (ArgumentNode arg : methodNode.getArgs()) {
+			Variable var = stack.add(arg);
 			var.assign(var.getType());
 		}
 
 		validateCodeScope(methodNode, false);
 		stack.exitScope();
 
-		final List<AstNode> s = methodNode.getBody();
+		List<AstNode> s = methodNode.getBody();
 		if (s.get(s.size() - 1).getNodeType() != AstNode.NodeType.RETURN) {
 			throw new MissingReturnException(methodNode);
 		}
 	}
 
-	private void validateCodeScope(final ScopeNode scopeNode) 
-			throws InvalidCodeException {
-		validateCodeScope(scopeNode, true);
-	}
-
-	private void validateCodeScope(final ScopeNode scopeNode, 
-			final boolean isDifferentNameScope) throws InvalidCodeException {
+	/*
+	 * Validates the a code scope was declared right.
+	 * @param isDifferentNameScope Whether the stack should behave as it entered
+	 * a new scope.
+	 * @throws InvalidCodeException If it was not right.
+	 */
+	private void validateCodeScope(ScopeNode scopeNode, 
+			boolean isDifferentNameScope) throws InvalidCodeException {
 		if (isDifferentNameScope) {
 			stack.enterScope();
 		}
 
-		for (final AstNode node : scopeNode.getBody()) {
+		for (AstNode node : scopeNode.getBody()) {
 			switch (node.getNodeType()) {
 			case VAR_DECLARATION: 
-				final VarDeclarationNode varDeclaration = 
-						(VarDeclarationNode) node;
+				VarDeclarationNode varDeclaration = (VarDeclarationNode) node;
 				stack.add(varDeclaration);
 				break;
 			case ASSIGNMENT:
@@ -131,12 +140,12 @@ public class AstValidator {
 
 			case WHILE:
 			case IF: 
-				final ConditionalNode conditionalNode = (ConditionalNode) node;
+				ConditionalNode conditionalNode = (ConditionalNode) node;
 				validateCondition(conditionalNode.getCondition());
-				validateCodeScope(conditionalNode);
+				validateCodeScope(conditionalNode, true);
 				break;
 			case CALL_METHOD:
-				final CallMethodNode callMethodNode = (CallMethodNode) node;
+				CallMethodNode callMethodNode = (CallMethodNode) node;
 				validateCallMethod(callMethodNode);
 				break;
 			case RETURN:
@@ -149,13 +158,20 @@ public class AstValidator {
 		}
 	}
 	
+	/*
+	 * An helper method for validateCodeScope(ScopeNode, boolean).
+	 * Validates an assignment as properly done.
+	 * @throws VariableException If there is an error with one of the variables
+	 * at the assignment.
+	 * @throws TypeMismatchException If the value type is not acceptable by
+	 * the target variable.
+	 */
 	private void validateAssignment(AssignmentNode assignmentNode) 
 			throws VariableException, TypeMismatchException {
-		final ExpressionNode value = assignmentNode.getValue();
+		ExpressionNode value = assignmentNode.getValue();
 		validateExpression(value);
-		final ExpressionNode.ExpressionType valueType = 
-				getExpressionType(value);
-		final Variable var = stack.get(assignmentNode);
+		ExpressionNode.ExpressionType valueType = getExpressionType(value);
+		Variable var = stack.get(assignmentNode);
 
 		if (var.isFinal()) {
 			throw new FinalAssignmentException(assignmentNode);
@@ -166,11 +182,15 @@ public class AstValidator {
 		}
 	}
 
-	private void validateExpression(final ExpressionNode value) 
+	/*
+	 * Validates an expression exists and has a value.
+	 * @throws VariableException If it does not.
+	 */
+	private void validateExpression(ExpressionNode value) 
 			throws VariableException {
 		if (value.getNodeType() == AstNode.NodeType.VAR_VAL) {
-			final VarExpressionNode var = (VarExpressionNode) value;
-			final Variable valueVar = stack.get(var);
+			VarExpressionNode var = (VarExpressionNode) value;
+			Variable valueVar = stack.get(var);
 
 			if (!valueVar.hasValue()) {
 				throw new VarNeverAssignedException(var);
@@ -178,19 +198,27 @@ public class AstValidator {
 		}
 	}
 
-	private void validateCallMethod(final CallMethodNode callMethodNode)
-            throws MethodException, TypeMismatchException, VarDoesNotExistException {
-		final MethodNode methodNode = getMethod(callMethodNode);
+	/*
+	 * An helper method for validateCodeScope(ScopeNode, boolean).
+	 * @param callMethodNode A call to be validated.
+	 * @throws TypeMismatchException, 
+	 * @throws VarDoesNotExistException If there is a problem with a specific 
+	 * argument value.
+	 * @throws MethodException If there is a general problem with the call.
+	 */
+	private void validateCallMethod(CallMethodNode callMethodNode)
+            throws MethodException, TypeMismatchException, 
+            VarDoesNotExistException {
+		MethodNode methodNode = getMethod(callMethodNode);
 
 		if (callMethodNode.getArgs().size() != methodNode.getArgs().size()) {
 			throw new ArgumentsNumMismatchException(callMethodNode, methodNode);
 		}
 
-		//Iterator<ExpressionNode> argValue = callMethodNode.getArgs().iterator();
-		final Iterator<ArgumentNode> args  = methodNode.getArgs().iterator();
+		Iterator<ArgumentNode> args  = methodNode.getArgs().iterator();
 
-		for (final ExpressionNode argValue : callMethodNode.getArgs()) {
-			final ArgumentNode argumentNode = args.next();
+		for (ExpressionNode argValue : callMethodNode.getArgs()) {
+			ArgumentNode argumentNode = args.next();
 			if(!argumentNode.getType().accept(getExpressionType(argValue))) {
 				throw new TypeMismatchException(argumentNode.getName(), 
 						argumentNode.getType(), getExpressionType(argValue),
@@ -199,9 +227,14 @@ public class AstValidator {
 		}
 	}
 
-	private MethodNode getMethod(final CallMethodNode callMethodNode) throws 
+	/*
+	 * An helper method for validateCallMethod(CallMethodNode)
+	 * @return The declaration of the called method callMethodNode.
+	 * @throws MethodDoesNotExistException If it was never declared.
+	 */
+	private MethodNode getMethod(CallMethodNode callMethodNode) throws 
 			MethodDoesNotExistException {
-		for (final MethodNode methodNode : methodList) {
+		for (MethodNode methodNode : methodList) {
 			if (methodNode.getName().equals(callMethodNode.getName())) {
 				return methodNode;
 			}
@@ -209,16 +242,23 @@ public class AstValidator {
 		throw new MethodDoesNotExistException(callMethodNode);
 	}
 
-	private void validateCondition(final ExpressionNode condition) 
+	/*
+	 * A recursive  helper method for validateCodeScope(ScopeNode, boolean).
+	 * @param condition A boolean expression to be checked.
+	 * @throws TypeMismatchException If some of the expression is neither 
+	 * boolean nor numeric.
+	 * @throws VariableException Thrown by validateExpression().
+	 */
+	private void validateCondition(ExpressionNode condition) 
 			throws TypeMismatchException, VariableException {
 		if ((condition.getNodeType() == AstNode.NodeType.OR)||
 				(condition.getNodeType() == AstNode.NodeType.AND)) {
-			final BinaryOpNode binaryOpNode = (BinaryOpNode) condition;
+			BinaryOpNode binaryOpNode = (BinaryOpNode) condition;
 			validateCondition(binaryOpNode.getLeft());
 			validateCondition(binaryOpNode.getRight());
 		} else {
 			validateExpression(condition);
-			final ExpressionNode.ExpressionType expressionType = 
+			ExpressionNode.ExpressionType expressionType = 
 					getExpressionType(condition);
 			if (!ExpressionNode.ExpressionType.BOOLEAN.accept(expressionType)) {
 				throw new TypeMismatchException(CONDITION_NAME, 
@@ -228,12 +268,16 @@ public class AstValidator {
 		}
 	}
 
-
-	private ExpressionType getExpressionType( final ExpressionNode value) throws
+	/*
+	 * @return The type of value.
+	 * @throws VarDoesNotExistException If values is a VarExpressionNode of an
+	 * undeclared var.
+	 */
+	private ExpressionType getExpressionType(ExpressionNode value) throws
 			VarDoesNotExistException {
 		if (value.getNodeType() == AstNode.NodeType.VAR_VAL) {
-			final VarExpressionNode valueVarNode = (VarExpressionNode) value;
-			final Variable valueVar = stack.get(valueVarNode);
+			VarExpressionNode valueVarNode = (VarExpressionNode) value;
+			Variable valueVar = stack.get(valueVarNode);
 			return valueVar.getType();
 		}
 		return value.getType();

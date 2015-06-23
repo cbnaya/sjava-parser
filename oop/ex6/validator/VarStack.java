@@ -8,14 +8,16 @@ import oop.ex6.ast.VarExpressionNode;
 import oop.ex6.lexer.Position;
 
 /**
- * Keeps the state of all variables for one scope at a time.
+ * Keeps the variables, their state - initialized or not - and the scope of 
+ * their declaration.
  */
 public class VarStack {
 
+	// The built-in java stack is the inner implementation of this.
 	ArrayList<ArrayList<Variable>> stack;
 
 	/**
-	 * Constructs a new VarStack.
+	 * Ctor
 	 */
 	public VarStack() {
 		stack = new ArrayList<ArrayList<Variable>>();
@@ -26,7 +28,7 @@ public class VarStack {
 	 * @param varDeclarationNode The declaration of that variable.
 	 * @return The new Variable object. 
 	 * @throws VarDuplicateDeclaration If a variable with the same name was
-	 * alrady declared at the same scope.
+	 * already declared at the same scope.
 	 */
 	public Variable add(VarDeclarationNode varDeclarationNode) throws 
 			VarDuplicateDeclaration {

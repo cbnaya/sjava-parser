@@ -80,14 +80,14 @@ Our design suggests several steps for validating a s-java file:
 	representation of the abstract syntactic structure of source code. Each code 
 	could have only one way to be interpreted as a tree and vice versa. If the 
 	building the AST is a success, it is ensured that the code syntax structure 
-	is valid, i.e. while statements, all the brackets and so on are OK. it is 
+	is valid, i.e. while statements, all the brackets and so on are OK. It is 
 	not enough to ensure that the code is OK, since types, duplicate declaration 
-	and other problems involving names references are not checked yet,
+	and other problems involving names references are not checked yet.
 3.  validator - The last part of the analysis is "running the code" and check it 
-	is ok. we going over the AST, in a manner that represents running the code, 
-	and keeping the variables,their state - initialized or not - and the scope 
-	of their declaration. This way we validate the tree, and if no exception was 
-	thrown during the process, it means the whole code is valid.
+	is OK. We are going over the AST, in a manner that represents running the 
+	code, and keeping the variables, their state - initialized or not - and the 
+	scope of their declaration. This way we validate the tree, and if no 
+	exception was thrown during the process, it means the whole code is valid.
 
 --------- alternative design ---------
 We could have used regex for full lines, which will save us the need of 
