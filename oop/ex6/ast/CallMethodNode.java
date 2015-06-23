@@ -9,28 +9,28 @@ import oop.ex6.lexer.Position;
  */
 public class CallMethodNode extends AstNode {
 
-	private final List<ExpressionNode> args;
-	private final String name;
+    private final List<ExpressionNode> args;
+    private final String name;
 
     /**
-     * @param position The position in the file the method is called.
+     * @param position   The position in the file the method is called.
      * @param methodName The name of the called method.
      * @param methodArgs The arguments the method is called with.
      */
-    public CallMethodNode(Position position, String methodName, 
-    		List<ExpressionNode> methodArgs) {
-		super(position);
+    public CallMethodNode(Position position, String methodName,
+                          List<ExpressionNode> methodArgs) {
+        super(position);
         name = methodName;
-		args = methodArgs;
-	}
-    
-	/**
-	 * @return The arguments the method is called with.
-	 */
-	public List<ExpressionNode> getArgs() {
+        args = methodArgs;
+    }
+
+    /**
+     * @return The arguments the method is called with.
+     */
+    public List<ExpressionNode> getArgs() {
         return args;
     }
-	
+
     /**
      * @return The name of the called method.
      */

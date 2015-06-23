@@ -7,15 +7,15 @@ import oop.ex6.ast.AssignmentNode;
  */
 public class FinalAssignmentException extends VariableException {
 
-	private static final long serialVersionUID = 1L;
-	private static final String ERROR_MESSAGE_FORMAT = 
-			"Assignment to final %s is not allowed (%s)";
+    private static final long serialVersionUID = 1L;
+    private static final String ERROR_MESSAGE_FORMAT =
+            "Assignment to final %s is not allowed (%s)";
 
-	/**
-	 * @param assignmentNode The node containing the problematic assignment.
-	 */
-	public FinalAssignmentException(AssignmentNode assignmentNode) {
-		super(String.format(ERROR_MESSAGE_FORMAT, assignmentNode.getName(),
-				assignmentNode.getPosition().toString()));
-	}
+    /**
+     * @param assignmentNode The node containing the problematic assignment.
+     */
+    public FinalAssignmentException(AssignmentNode assignmentNode) {
+        super(String.format(ERROR_MESSAGE_FORMAT, assignmentNode.getName(),
+                assignmentNode.getPosition().toString()));
+    }
 }

@@ -7,22 +7,21 @@ import oop.ex6.lexer.Position;
  */
 public class AssignmentNode extends AstNode {
 
-	// The assigned expression.
-	private final ExpressionNode value;
-	// The name of the variable assigning to.
-	private final String name;
-	
+    // The assigned expression.
+    private final ExpressionNode value;
+    // The name of the variable assigning to.
+    private final String name;
+
     /**
      * @param position The position in the file of the assignment.
-     * @param name The name of the variable assigning to.
-     * @param value The assigned expression.
+     * @param name     The name of the variable assigning to.
+     * @param value    The assigned expression.
      */
-    public AssignmentNode(Position position, String name, ExpressionNode value) 
-    {
-		super(position);
+    public AssignmentNode(Position position, String name, ExpressionNode value) {
+        super(position);
         this.name = name;
-		this.value = value;
-	}
+        this.value = value;
+    }
 
     /**
      * @return The name of the variable assigning to.
@@ -31,10 +30,10 @@ public class AssignmentNode extends AstNode {
         return name;
     }
 
-	/* (non-Javadoc)
-	 * @see oop.ex6.ast.AstNode#getNodeType()
-	 */
-	@Override
+    /* (non-Javadoc)
+     * @see oop.ex6.ast.AstNode#getNodeType()
+     */
+    @Override
     public NodeType getNodeType() {
         return NodeType.ASSIGNMENT;
     }
@@ -43,7 +42,7 @@ public class AssignmentNode extends AstNode {
      * @return The assigned expression.
      */
     public ExpressionNode getValue() {
-		return value;
-	}
+        return value;
+    }
 
 }

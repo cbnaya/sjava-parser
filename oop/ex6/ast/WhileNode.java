@@ -9,15 +9,15 @@ import oop.ex6.lexer.Position;
  */
 public class WhileNode extends ConditionalNode {
 
-	/**
-	 * @param position The position in the file the while scope starts.
-	 * @param condition The condition of the while.
-	 * @param body The nodes representing the code inside the while scope.
-	 */
-	public WhileNode(Position position, ExpressionNode condition, 
-			List<AstNode> body) {
+    /**
+     * @param position  The position in the file the while scope starts.
+     * @param condition The condition of the while.
+     * @param body      The nodes representing the code inside the while scope.
+     */
+    public WhileNode(Position position, ExpressionNode condition,
+                     List<AstNode> body) {
         super(position, condition, body);
-	}
+    }
 
     /* (non-Javadoc)
      * @see oop.ex6.ast.ScopeNode#getNodeType()

@@ -7,16 +7,15 @@ import oop.ex6.ast.VarDeclarationNode;
  */
 public class VarDuplicateDeclaration extends VariableException {
 
-	private static final long serialVersionUID = 1L;
-	private static final String ERROR_MESSAGE_FORMAT = 
-    		"variable name %s was declared already (%s)";
+    private static final long serialVersionUID = 1L;
+    private static final String ERROR_MESSAGE_FORMAT =
+            "variable name %s was declared already (%s)";
 
     /**
-     * @param varDeclarationNode The node representing the problematic 
-     * declaration.
+     * @param varDeclarationNode The node representing the problematic
+     *                           declaration.
      */
-    public VarDuplicateDeclaration(VarDeclarationNode varDeclarationNode)
-    {
+    public VarDuplicateDeclaration(VarDeclarationNode varDeclarationNode) {
         super(String.format(ERROR_MESSAGE_FORMAT, varDeclarationNode.getName(),
                 varDeclarationNode.getPosition().toString()));
     }

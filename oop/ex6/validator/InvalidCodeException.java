@@ -5,13 +5,14 @@ package oop.ex6.validator;
  */
 public abstract class InvalidCodeException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs a new exception with the specified detail message.
-	 * @param message The detail message.
-	 */
-	public InvalidCodeException(String message) {
-		super(message);
-	}
+    /**
+     * Constructs a new exception with the specified detail message.
+     *
+     * @param message The detail message.
+     */
+    public InvalidCodeException(String message) {
+        super(message);
+    }
 }

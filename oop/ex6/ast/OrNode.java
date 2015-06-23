@@ -7,16 +7,16 @@ import oop.ex6.lexer.Position;
  */
 public class OrNode extends BinaryOpNode {
 
-	/**
-	 * If (x || y), 
-	 * @param position The position in the file of ||.
-	 * @param left x
-	 * @param right y
-	 */
-	public OrNode(Position position, ExpressionNode left, ExpressionNode right)
-	{
-		super(position, left, right);
-	}
+    /**
+     * If (x || y),
+     *
+     * @param position The position in the file of ||.
+     * @param left     x
+     * @param right    y
+     */
+    public OrNode(Position position, ExpressionNode left, ExpressionNode right) {
+        super(position, left, right);
+    }
 
     /* (non-Javadoc)
      * @see oop.ex6.ast.AstNode#getNodeType()

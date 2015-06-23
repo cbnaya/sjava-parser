@@ -9,13 +9,13 @@ import oop.ex6.lexer.Position;
  */
 public class IfNode extends ConditionalNode {
 
-	/**
-	 * @param position The position in the file the if scope starts.
-	 * @param condition The condition of the if.
-	 * @param body The nodes representing the code inside the if scope.
-	 */
-	public IfNode(Position position, ExpressionNode condition, 
-			List<AstNode> body) {
+    /**
+     * @param position  The position in the file the if scope starts.
+     * @param condition The condition of the if.
+     * @param body      The nodes representing the code inside the if scope.
+     */
+    public IfNode(Position position, ExpressionNode condition,
+                  List<AstNode> body) {
         super(position, condition, body);
     }
 

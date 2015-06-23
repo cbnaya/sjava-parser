@@ -11,34 +11,34 @@ import oop.ex6.lexer.Position;
  */
 public abstract class AstNode {
 
-	/**
-	 * An enum of the different nodes types.
-	 */
-	public static enum NodeType {
-		RETURN, CODE_SCOPE, METHOD, ARGUMENT, GLOBAL, WHILE, IF, 
-		VAR_DECLARATION, CALL_METHOD, ASSIGNMENT, LITERAL, VAR_VAL, OR, AND
-	}
+    /**
+     * An enum of the different nodes types.
+     */
+    public static enum NodeType {
+        RETURN, CODE_SCOPE, METHOD, ARGUMENT, GLOBAL, WHILE, IF,
+        VAR_DECLARATION, CALL_METHOD, ASSIGNMENT, LITERAL, VAR_VAL, OR, AND
+    }
 
-	// The original position in the file.
-	private final Position position;
+    // The original position in the file.
+    private final Position position;
 
-	/**
-	 * @param position The position in the file of the node's creation.
-	 */
-	public AstNode(Position position) {
-		this.position = position;
-	}
+    /**
+     * @param position The position in the file of the node's creation.
+     */
+    public AstNode(Position position) {
+        this.position = position;
+    }
 
-	/**
-	 * @return The type of the node.
-	 */
-	public abstract NodeType getNodeType();
+    /**
+     * @return The type of the node.
+     */
+    public abstract NodeType getNodeType();
 
-	/**
-	 * @return The position in the file of the node's creation.
-	 */
-	public Position getPosition() {
-		return position;
-	}
+    /**
+     * @return The position in the file of the node's creation.
+     */
+    public Position getPosition() {
+        return position;
+    }
 
 }

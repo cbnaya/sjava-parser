@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 import static oop.ex6.lexer.Token.TokenType;
 
 /**
- * the second part of the code analysis is build an AST from the sequence of 
- * tokens. AST is a bijective tree representation of the abstract syntactic 
- * structure of source code. Each code could have only one way to be interpreted 
- * as a tree and vice versa. If the build of the AST success it is ensure that 
- * the code syntax structure is valid, i.e. the while statement is ok, all the 
- * brackets is ok and so on, but it is not enough to ensure that the code is ok, 
+ * the second part of the code analysis is build an AST from the sequence of
+ * tokens. AST is a bijective tree representation of the abstract syntactic
+ * structure of source code. Each code could have only one way to be interpreted
+ * as a tree and vice versa. If the build of the AST success it is ensure that
+ * the code syntax structure is valid, i.e. the while statement is ok, all the
+ * brackets is ok and so on, but it is not enough to ensure that the code is ok,
  * the types is not checked duplicate declaration is not checked and so on.
  * <p/>
  * This parser get Tokenizer and create GlobalNode the root node of the ast.
@@ -40,7 +40,7 @@ public class Parser {
      * @param tokenizer The iterator of all the tokens of the code
      */
     public Parser(Tokenizer tokenizer) {
-        this.tokenizer = new ComplexIterator<Token>(tokenizer);
+        this.tokenizer = new ComplexIterator<>(tokenizer);
     }
 
     /**
@@ -48,11 +48,11 @@ public class Parser {
      *
      * @param tok          The token to check
      * @param requiredType The required type
-     * @throws OtherTokenTypeExpectedHereException If the token type is not 
-     * match the required type
+     * @throws OtherTokenTypeExpectedHereException If the token type is not
+     *                                             match the required type
      */
-    private void validateTokenType(Token tok, TokenType requiredType) 
-    		throws OtherTokenTypeExpectedHereException {
+    private void validateTokenType(Token tok, TokenType requiredType)
+            throws OtherTokenTypeExpectedHereException {
         if (tok.getType() != requiredType) {
             throw new OtherTokenTypeExpectedHereException(tok, requiredType);
         }
@@ -63,11 +63,11 @@ public class Parser {
      * this function move the tokenizer forward
      *
      * @param requiredType the required type
-     * @throws OtherTokenTypeExpectedHereException if the next token does not 
-     * match the required type
+     * @throws OtherTokenTypeExpectedHereException if the next token does not
+     *                                             match the required type
      */
-    private void validateNextTokenIs(TokenType requiredType) 
-    		throws OtherTokenTypeExpectedHereException {
+    private void validateNextTokenIs(TokenType requiredType)
+            throws OtherTokenTypeExpectedHereException {
         Token tok = tokenizer.next();
         validateTokenType(tok, requiredType);
     }
@@ -77,8 +77,8 @@ public class Parser {
      * this function have to be called when the next token is END_OF_STATEMENT
      * after the function the iterator will point on the new line
      *
-     * @throws OtherTokenTypeExpectedHereException If the next tokens is not 
-     * END_OF_STATEMENT or NEW_LINE.
+     * @throws OtherTokenTypeExpectedHereException If the next tokens is not
+     *                                             END_OF_STATEMENT or NEW_LINE.
      */
     private void validEndOfStatement() throws OtherTokenTypeExpectedHereException {
         validateTokenType(tokenizer.current(), TokenType.END_OF_STATEMENT);
@@ -86,16 +86,16 @@ public class Parser {
     }
 
     /**
-     * parse the global scope of the code - its include all the global code and 
+     * parse the global scope of the code - its include all the global code and
      * all the methods
      *
      * @return GlobalNode The root node of the ast (contains to global code
-     *  and methods)
+     * and methods)
      * @throws ParsingFailedException If the parse will failed
      */
     public GlobalNode parseGlobal() throws ParsingFailedException {
-        List<AstNode> body = new LinkedList<AstNode>();
-        List<MethodNode> methods = new ArrayList<MethodNode>();
+        List<AstNode> body = new LinkedList<>();
+        List<MethodNode> methods = new ArrayList<>();
 
         while (tokenizer.hasNext()) {
             Token tok = tokenizer.next();
@@ -133,20 +133,19 @@ public class Parser {
 
     /**
      * parse function deceleration (include the function code)
-     * this function have to be called when the iterator point of 
-     * FUNCTION_DECLARE token in the end of this function the tokenizer will 
+     * this function have to be called when the iterator point of
+     * FUNCTION_DECLARE token in the end of this function the tokenizer will
      * point on the end of the method
      *
      * @return MethodNode An AST Node that represent method
      * @throws ParsingFailedException If the parsing failed
      */
-    private MethodNode parseFunctionDeclaration() throws ParsingFailedException 
-    {
-        validateTokenType(tokenizer.current(), 
-        		Token.TokenType.FUNCTION_DECLARE);
+    private MethodNode parseFunctionDeclaration() throws ParsingFailedException {
+        validateTokenType(tokenizer.current(),
+                Token.TokenType.FUNCTION_DECLARE);
 
-        Position functionDeclarationPosition = 
-        		tokenizer.current().getStartPosition();
+        Position functionDeclarationPosition =
+                tokenizer.current().getStartPosition();
 
         Token tok = tokenizer.next();
         validateTokenType(tok, TokenType.IDENTITY);
@@ -158,14 +157,14 @@ public class Parser {
 
         List<ArgumentNode> args = parseDecelerationArgs();
         List<AstNode> body = codeSegment();
-        return new MethodNode(functionDeclarationPosition, methodName, args, 
-        		body);
+        return new MethodNode(functionDeclarationPosition, methodName, args,
+                body);
     }
 
     /**
      * parsing code segment (method, while or if)
-     * this function have to be called when the next token of the iterator is 
-     * OPEN_BRACES token after this function the iterator will point on the new 
+     * this function have to be called when the next token of the iterator is
+     * OPEN_BRACES token after this function the iterator will point on the new
      * line after the code segment
      *
      * @return List of AstNodes, representing the code.
@@ -176,7 +175,7 @@ public class Parser {
         validateNextTokenIs(TokenType.NEW_LINE);
 
         Token tok = tokenizer.next();
-        List<AstNode> body = new LinkedList<AstNode>();
+        List<AstNode> body = new LinkedList<>();
         do {
             switch (tok.getType()) {
                 case IF: {
@@ -220,12 +219,12 @@ public class Parser {
     /**
      * parse the return statement
      * this function have to call when the iterator point on RETURN_OP token
-     * after this function the iterator will point on the new line after the 
+     * after this function the iterator will point on the new line after the
      * return
      *
      * @return ReturnNode The return AST node
-     * @throws OtherTokenTypeExpectedHereException If the current token is not 
-     * return
+     * @throws OtherTokenTypeExpectedHereException If the current token is not
+     *                                             return
      */
     private ReturnNode parseReturn() throws OtherTokenTypeExpectedHereException {
         validateTokenType(tokenizer.current(), TokenType.RETURN_OP);
@@ -267,7 +266,7 @@ public class Parser {
     /**
      * parse a while loop
      * this function have to call when the iterator point on WHILE_LOOP
-     * after this function the iterator will point on the new line after the 
+     * after this function the iterator will point on the new line after the
      * while loop
      *
      * @return WhileNode an AST node that represent while loop
@@ -286,8 +285,8 @@ public class Parser {
 
 
     /**
-     * parse an if 
-     * this function have to call when the iterator point on IF after this 
+     * parse an if
+     * this function have to call when the iterator point on IF after this
      * function the iterator will point on the new line after the if scope
      *
      * @return IfNode an AST node that represent if
@@ -305,8 +304,8 @@ public class Parser {
 
     /**
      * parse call to a method
-     * this function have to call when the iterator is point on the function 
-     * identity (IDENTITY) after this function the iterator will point on the 
+     * this function have to call when the iterator is point on the function
+     * identity (IDENTITY) after this function the iterator will point on the
      * new line after the call
      *
      * @return CallMethodNode - an AST node that represent call to a method
@@ -332,10 +331,10 @@ public class Parser {
      * @return List<ExpressionNode> - list of expression nodes
      * @throws ParsingFailedException - if the parse failed
      */
-    private List<ExpressionNode> parseCallArguments() 
-    		throws ParsingFailedException {
+    private List<ExpressionNode> parseCallArguments()
+            throws ParsingFailedException {
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
-        List<ExpressionNode> args = new ArrayList<ExpressionNode>();
+        List<ExpressionNode> args = new ArrayList<>();
 
         Token tok;
         do {
@@ -357,10 +356,10 @@ public class Parser {
      *
      * @return ExpressionNode An AST node that represent expression
      * @throws NotAllowedInThisContextException If the condition is not an
-     * expression of the correct type
+     *                                          expression of the correct type
      */
-    private ExpressionNode parseSingleCondition() 
-    		throws NotAllowedInThisContextException {
+    private ExpressionNode parseSingleCondition()
+            throws NotAllowedInThisContextException {
         Token tok = tokenizer.next();
 
         switch (tok.getType()) {
@@ -394,13 +393,13 @@ public class Parser {
         while (tok.getType() != TokenType.CLOSE_PARENTHESES) {
             switch (tok.getType()) {
                 case OR_OP: {
-                    condition = new OrNode(tok.getStartPosition(), condition, 
-                    		parseSingleCondition());
+                    condition = new OrNode(tok.getStartPosition(), condition,
+                            parseSingleCondition());
                 }
                 break;
                 case AND_OP: {
-                    condition = new AndNode(tok.getStartPosition(), condition, 
-                    		parseSingleCondition());
+                    condition = new AndNode(tok.getStartPosition(), condition,
+                            parseSingleCondition());
                 }
                 break;
                 default: {
@@ -420,9 +419,9 @@ public class Parser {
      * @return list of argument nodes
      * @throws ParsingFailedException - if the parsing is failed
      */
-    private List<ArgumentNode> parseDecelerationArgs() 
-    		throws ParsingFailedException {
-        List<ArgumentNode> args = new ArrayList<ArgumentNode>();
+    private List<ArgumentNode> parseDecelerationArgs()
+            throws ParsingFailedException {
+        List<ArgumentNode> args = new ArrayList<>();
         Token tok;
 
         validateNextTokenIs(TokenType.OPEN_PARENTHESES);
@@ -445,8 +444,8 @@ public class Parser {
                 throw new InvalidIdentityNameException(tok);
             }
 
-            args.add(new ArgumentNode(tok.getStartPosition(), type, 
-            		tok.getData(), isFinal));
+            args.add(new ArgumentNode(tok.getStartPosition(), type,
+                    tok.getData(), isFinal));
 
             tok = tokenizer.next();
         } while (tok.getType() == TokenType.COMMA);
@@ -464,9 +463,9 @@ public class Parser {
      * @return list of AST node that contains var declarations and assignment
      * @throws ParsingFailedException - if the parsing failed
      */
-    private List<AstNode> parseVariablesDeceleration() 
-    		throws ParsingFailedException {
-        List<AstNode> result = new LinkedList<AstNode>();
+    private List<AstNode> parseVariablesDeceleration()
+            throws ParsingFailedException {
+        List<AstNode> result = new LinkedList<>();
 
         boolean isFinal = isCurrentTokenIsFinal();
 
@@ -482,11 +481,11 @@ public class Parser {
             if (!isValidIdentityName(varName)) {
                 throw new InvalidIdentityNameException(tok);
             }
-            result.add(new VarDeclarationNode(tok.getStartPosition(), type, 
-            		varName, isFinal));
+            result.add(new VarDeclarationNode(tok.getStartPosition(), type,
+                    varName, isFinal));
 
-            if (isFinal || 
-            		tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP) {
+            if (isFinal ||
+                    tokenizer.getNext().getType() == TokenType.ASSIGNMENT_OP) {
                 result.add(parseAssignment());
             }
 
@@ -515,8 +514,8 @@ public class Parser {
 
         ExpressionNode valueExpr = convertValueTokenToExpression(valueTok);
 
-        return new AssignmentNode(targetTok.getStartPosition(), 
-        		targetTok.getData(), valueExpr);
+        return new AssignmentNode(targetTok.getStartPosition(),
+                targetTok.getData(), valueExpr);
     }
 
     /**
@@ -524,8 +523,8 @@ public class Parser {
      *
      * @param valueTok - the token to convert
      * @return - ExpressionNode - an AST node that represent expression
-     * @throws NotAllowedInThisContextException - if this token is not variable 
-     * or literal
+     * @throws NotAllowedInThisContextException - if this token is not variable
+     *                                          or literal
      */
     private ExpressionNode convertValueTokenToExpression(Token valueTok) throws NotAllowedInThisContextException {
 
@@ -544,16 +543,16 @@ public class Parser {
     }
 
     /**
-     * covert the type of literal value token to ExpressionType - enum of the 
+     * covert the type of literal value token to ExpressionType - enum of the
      * AST of the variable types
      *
      * @param tok - the literal value token
      * @return ExpressionType - enum of the variable types
-     * @throws NotAllowedInThisContextException - if the token is not token of 
-     * literal value
+     * @throws NotAllowedInThisContextException - if the token is not token of
+     *                                          literal value
      */
-    private static ExpressionType convertTokenTypeToExpressionType(Token tok) 
-    		throws NotAllowedInThisContextException {
+    private static ExpressionType convertTokenTypeToExpressionType(Token tok)
+            throws NotAllowedInThisContextException {
         switch (tok.getType()) {
             case LITERAL_BOOLEAN:
                 return ExpressionType.BOOLEAN;
@@ -596,8 +595,8 @@ public class Parser {
      * @return if this string is valid variable name
      */
     private static boolean isValidIdentityName(String identity) {
-        return (Pattern.matches(VALID_IDENTITY_CHARS_REGEX_PATTERN, identity)) 
-        		&& (!identity.equals(UNDERSCORE_STRING)) &&
+        return (Pattern.matches(VALID_IDENTITY_CHARS_REGEX_PATTERN, identity))
+                && (!identity.equals(UNDERSCORE_STRING)) &&
                 (!Pattern.matches(START_WITH_NUMBER_REGEX_PATTERN, identity));
     }
 
@@ -610,8 +609,8 @@ public class Parser {
 
     private boolean isValidFunctionName(String methodName) {
         return (isValidIdentityName(methodName) &&
-                (Pattern.matches(START_WITH_UNDERSCORE_REGEX_PATTERN, 
-                		methodName)));
+                (Pattern.matches(START_WITH_UNDERSCORE_REGEX_PATTERN,
+                        methodName)));
     }
 
     /**

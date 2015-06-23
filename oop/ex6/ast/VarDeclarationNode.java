@@ -7,20 +7,20 @@ import oop.ex6.lexer.Position;
  * Representing a declaration of a variable.
  */
 public class VarDeclarationNode extends AstNode {
-	 
+
     private final String name;
     private final ExpressionType type;
     // Whether the variable is assignable after declaration.
     private final boolean isFinal;
-    
+
     /**
      * @param position The position in the file of the variable declaration.
-     * @param type The variable's type. (e.g "int", "String", etc.)
-     * @param name The variable's name.
-     * @param isFinal Whether the variable is assignable after declaration.
+     * @param type     The variable's type. (e.g "int", "String", etc.)
+     * @param name     The variable's name.
+     * @param isFinal  Whether the variable is assignable after declaration.
      */
-	public VarDeclarationNode(Position position, String type, String name, 
-			boolean isFinal) {
+    public VarDeclarationNode(Position position, String type, String name,
+                              boolean isFinal) {
         super(position);
         this.type = ExpressionType.valueOf(type.toUpperCase());
         this.name = name;
@@ -45,9 +45,9 @@ public class VarDeclarationNode extends AstNode {
      * @return Whether the variable is assignable after declaration.
      */
     public boolean isFinal() {
-    	return isFinal;
+        return isFinal;
     }
-    
+
     /* (non-Javadoc)
      * @see oop.ex6.ast.AstNode#getNodeType()
      */

@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 
 /**
  * The first part of the code analysis is the Lexical analysis.
- * in this process we convert to code to sequence of tokens, i.e. meaningful 
- * strings. Each token is atom in the language syntax e.g. the key word "if", 
+ * in this process we convert to code to sequence of tokens, i.e. meaningful
+ * strings. Each token is atom in the language syntax e.g. the key word "if",
  * open parentheses, identity, new line and so on.
  * For each token we save the string, the type, and the position.
  * The tokenizer is actually iterator of tokens.
- *
+ * <p/>
  * We implement a tokenizer based on the regex named capturing groups.
  */
 public class Tokenizer implements Iterator<Token> {
@@ -20,8 +20,8 @@ public class Tokenizer implements Iterator<Token> {
     //save the pattern of optional regex group
     public static final String REGEX_OPTION_GROUP = "|(?<%s>%s)";
     //the error message in case that any token is not match
-    public static final String NOT_MATCH_ANY_PATTERN_ERROR_MSG = 
-    		"match data does not match to any token pattern";
+    public static final String NOT_MATCH_ANY_PATTERN_ERROR_MSG =
+            "match data does not match to any token pattern";
     //save the last token
     private Token lastToken;
     //the regex object of the match
@@ -48,8 +48,8 @@ public class Tokenizer implements Iterator<Token> {
     private static Pattern createTokensPattern() {
         StringBuilder tokenPatternsString = new StringBuilder();
         for (Token.TokenType type : Token.TokenType.values()) {
-            tokenPatternsString.append(String.format(REGEX_OPTION_GROUP, 
-            		type.getGroupName(), type.matchPattern()));
+            tokenPatternsString.append(String.format(REGEX_OPTION_GROUP,
+                    type.getGroupName(), type.matchPattern()));
         }
 
         //in the first group the or is redundant so we start from the second char
@@ -68,7 +68,7 @@ public class Tokenizer implements Iterator<Token> {
             if (result != null) {
                 return new Token(type, result,
                         Position.createFromOffset(match.start(), fileContent),
-                        Position.createFromOffset(match.end()-1, fileContent));
+                        Position.createFromOffset(match.end() - 1, fileContent));
             }
         }
 
@@ -80,13 +80,13 @@ public class Tokenizer implements Iterator<Token> {
      */
     @Override
     public boolean hasNext() {
-        return (null == lastToken) || 
-        		(lastToken.getType() != Token.TokenType.EOF);
+        return (null == lastToken) ||
+                (lastToken.getType() != Token.TokenType.EOF);
     }
 
     /**
-     * Return whether a token type is ignored by the iterator. Because not all 
-     * the tokens are relevant for the later processes, we ignore them in the 
+     * Return whether a token type is ignored by the iterator. Because not all
+     * the tokens are relevant for the later processes, we ignore them in the
      * iterator.
      *
      * @param tokenType The type to check if ignored.
@@ -97,7 +97,7 @@ public class Tokenizer implements Iterator<Token> {
             case WHITE_SPACE:
             case COMMENT:
                 return true;
-            default: 
+            default:
                 return false;
         }
     }

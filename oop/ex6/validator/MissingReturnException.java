@@ -7,12 +7,12 @@ import oop.ex6.ast.MethodNode;
  */
 public class MissingReturnException extends MethodException {
 
-	private static final long serialVersionUID = 1L;
-	public static final String ERROR_MESSAGE_FORMAT = 
-			"method %s does not end with a return statement (%s)";
+    private static final long serialVersionUID = 1L;
+    public static final String ERROR_MESSAGE_FORMAT =
+            "method %s does not end with a return statement (%s)";
 
     public MissingReturnException(MethodNode methodNode) {
-        super(String.format(ERROR_MESSAGE_FORMAT, methodNode.getName(), 
-        		methodNode.getPosition()));
+        super(String.format(ERROR_MESSAGE_FORMAT, methodNode.getName(),
+                methodNode.getPosition()));
     }
 }

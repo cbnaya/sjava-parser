@@ -60,7 +60,7 @@ public class Sjavac {
     }
 
     private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(path)), 
-        		StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(Paths.get(path)),
+                StandardCharsets.UTF_8);
     }
 }

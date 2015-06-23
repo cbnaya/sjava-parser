@@ -8,16 +8,17 @@ import oop.ex6.lexer.Token;
  */
 public class InvalidIdentityNameException extends ParsingFailedException {
 
-	private static final long serialVersionUID = 1L;
-	public static final String ERROR_MESSAGE_FORMAT = 
-			"invalid identity name: %s (%s)";
+    private static final long serialVersionUID = 1L;
+    public static final String ERROR_MESSAGE_FORMAT =
+            "invalid identity name: %s (%s)";
 
     /**
      * Ctor
+     *
      * @param tok - the problematic identity token
      */
     public InvalidIdentityNameException(Token tok) {
         super(String.format(ERROR_MESSAGE_FORMAT, tok.getData(),
-        		tok.getStartPosition().toString()));
+                tok.getStartPosition().toString()));
     }
 }

@@ -4,7 +4,7 @@ package oop.ex6.lexer;
  * this class represent a location in the file
  */
 public class Position {
-	
+
     //the to string message format
     public static final String TO_STRING_FORMAT = "line %d column %d";
     //regex of new line of the split
